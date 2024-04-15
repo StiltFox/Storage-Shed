@@ -46,7 +46,7 @@ install(
 
 install(EXPORT StorageShed
         FILE StorageShedTargets.cmake
-        NAMESPACE Stiltfox::StorageShed::
+        NAMESPACE StiltFox::StorageShed::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/StorageShed
 )
 
