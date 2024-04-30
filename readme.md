@@ -1,20 +1,20 @@
-# Stilt Fox&trade; Storage Shed
-Stilt Fox&trade; Storage Shed is a C++ library made with the aim of creating a universal database api. This api which is provided by modules/DatabaseConnection.h++ will over time
-be implemented by different databases as Stilt Fox&trade; uses them in other projects. This is a project that used to be a part of Stilt Fox&trade; Universal library, however
+# Stilt Fox&reg; Storage Shed
+Stilt Fox&reg; Storage Shed is a C++ library made with the aim of creating a universal database api. This api which is provided by modules/DatabaseConnection.h++ will over time
+be implemented by different databases as Stilt Fox&reg; uses them in other projects. This is a project that used to be a part of Stilt Fox&reg; Universal library, however
 this project was split into many smaller ones for better maintainability and modularity.
 
 ## Legal Stuff
-Stilt Fox&trade; is not liable for any damages done to your hardware. For more information see LICENSE file.\
-Stilt Fox&trade; is trademarked. You may not use the Stilt Fox™ name, however this code is free to reference and use.\
-You may contribute to this library, however all contributions will share the same license as this library and you agree that Stilt Fox&trade; owns the copyright for any contributions.
+Stilt Fox&reg; is not liable for any damages done to your hardware. For more information see LICENSE file.\
+Stilt Fox&reg; is trademarked. You may not use the Stilt Fox™ name, however this code is free to reference and use.\
+You may contribute to this library, however all contributions will share the same license as this library and you agree that Stilt Fox&reg; owns the copyright for any contributions.
 
 ## Prerequisites
 - CMake
   - version 3.5.0 or greater
 - C++ compiler
   - must support C++ version 20 or higher
-  - We at Stilt Fox&trade; tend to use g++
-- Stilt Fox&trade; Scribe
+  - We at Stilt Fox&reg; tend to use g++
+- Stilt Fox&reg; Scribe
   - Can be found [here](https://github.com/StiltFox/Scribe)
 - SQLite3
     - This code is statically linked as it has no copyright nor eula.
@@ -70,7 +70,7 @@ Because we are running on Linux, by default only the Linux binaries for the GTes
  cmake --install .
  ```
 
- #### Compiling and Installing Stilt Fox&trade; Storage Shed for Windows
+ #### Compiling and Installing Stilt Fox&reg; Storage Shed for Windows
 ```bash
 mkdir build
 cd build
@@ -91,8 +91,8 @@ for an example please checkout the [helper scripts](helper_scripts).\
 to install wine on your system do the following:\
 `sudo apt install wine`
 
-## Linking to Stilt Fox&trade; Storage Shed
-Linking to Stilt Fox&trade; Storage Shed is easy. In your CMakeLists.txt file include the following line:\
+## Linking to Stilt Fox&reg; Storage Shed
+Linking to Stilt Fox&reg; Storage Shed is easy. In your CMakeLists.txt file include the following line:\
 `find_package(StorageShed)`\
 then to link to your project use the following line:\
 `target_link_libraries(MyProject StiltFox::StorageShed::SqliteConnection)`\
@@ -100,7 +100,7 @@ please notice that each module you want to link must be linked separately as sho
 modules. This allows you to include only what you need in your build.
 
 ## Tutorials and Examples
-If you want to see the classes of Stilt Fox&trade; Storage Shed, feel free to check out the [test folder](test). All public methods
+If you want to see the classes of Stilt Fox&reg; Storage Shed, feel free to check out the [test folder](test). All public methods
 are thoroughly unit tested, and also demonstrate intended usage of the classes.
 
 ## Helper Scripts
