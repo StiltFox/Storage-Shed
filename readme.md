@@ -100,7 +100,7 @@ please notice that each module you want to link must be linked separately as sho
 modules. This allows you to include only what you need in your build.
 
 ## Tutorials and Examples
-If you want to see the classes of Stilt Fox&reg; Storage Shed, feel free to check out the [test folder](test). All public methods
+If you want to see the classes of Stilt Fox&reg; Storage Shed, feel free to check out the [test folder](src/test). All public methods
 are thoroughly unit tested, and also demonstrate intended usage of the classes.
 
 ## Helper Scripts

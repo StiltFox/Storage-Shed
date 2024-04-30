@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(Storage-Shed VERSION 1.0.0)
+project(Storage-Shed VERSION 2.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -9,19 +9,8 @@ include(CMakePackageConfigHelpers)
 
 find_package(Scribe REQUIRED)
 find_package(SQLite3 REQUIRED)
-include_directories(modules)
 
-if(NOT SFSkipTesting)
-    find_package(GTest REQUIRED)
-    include(GoogleTest)
-    enable_testing()
-
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    add_subdirectory(test)
-endif()
-
-add_subdirectory(modules)
+add_subdirectory(src)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/StorageShedConfig.cmake"
