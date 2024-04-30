@@ -4,5 +4,5 @@ mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
-./test/Tests
+./src/test/Tests
 cd ..
