@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
-#include "SqliteConnection.hpp"
+#include "SqliteConnection.h++"
 
 using namespace StiltFox::StorageShed;
 using namespace std;

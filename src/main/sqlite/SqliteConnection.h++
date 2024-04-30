@@ -1,7 +1,7 @@
 #ifndef StiltFox_UniversalLibrary_SqliteConnection
 #define StiltFox_UniversalLibrary_SqliteConnection
 #include <functional>
-#include "DatabaseConnection.hpp"
+#include "DatabaseConnection.h++"
 
 namespace StiltFox::StorageShed
 {

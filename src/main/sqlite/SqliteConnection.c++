@@ -1,6 +1,6 @@
 #include <sqlite3.h>
 #include <Stilt_Fox/Scribe/File.h++>
-#include "SqliteConnection.hpp"
+#include "SqliteConnection.h++"
 
 using namespace StiltFox::Scribe;
 using namespace StiltFox::StorageShed;
