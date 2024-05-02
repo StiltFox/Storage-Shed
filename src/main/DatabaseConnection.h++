@@ -28,6 +28,11 @@ namespace StiltFox::StorageShed
         {
             return connection != nullptr;
         }
+
+        std::string getConnectionString()
+        {
+            return connectionString;
+        }
     };
 }
 
