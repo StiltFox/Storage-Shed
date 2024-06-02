@@ -8,13 +8,10 @@ namespace StiltFox::StorageShed
     class SqliteConnection : public DatabaseConnection
     {
         bool checkIfValidSqlDatabase();
-        void forEachTable(std::function<void(std::string)>);
+        void forEachTable(const std::function<void(std::string)>&);
 
         public:
-        SqliteConnection(const char* connection)
-        {
-            connectionString = connection;
-        }
+        SqliteConnection(const char* connection);
 
         bool connect() override;
         void disconnect() override;
@@ -26,15 +23,8 @@ namespace StiltFox::StorageShed
         std::vector<std::unordered_map<std::string, std::string>> performQuery(std::string, std::vector<std::string>) override;
         std::unordered_map<std::string,std::vector<std::unordered_map<std::string, std::string>>> getAllData() override;
 
-        void operator=(std::string connection)
-        {
-            connectionString = connection;
-        }
-
-        ~SqliteConnection()
-        {
-            if (connection != nullptr) disconnect();
-        }
+        SqliteConnection& operator=(const std::string& connection);
+        ~SqliteConnection();
     };
 }
 
