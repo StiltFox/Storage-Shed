@@ -12,6 +12,7 @@ namespace StiltFox::StorageShed
 
         public:
         SqliteConnection(const char* connection);
+        SqliteConnection(const std::string& connection);
 
         bool connect() override;
         void disconnect() override;
