@@ -6,6 +6,8 @@ using namespace StiltFox::Scribe;
 using namespace StiltFox::StorageShed;
 using namespace std;
 
+SqliteConnection::SqliteConnection(const string& connection) : SqliteConnection(connection.c_str()) {}
+
 SqliteConnection::SqliteConnection(const char* connection)
 {
     connectionString = connection;
