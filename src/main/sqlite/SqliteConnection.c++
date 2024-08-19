@@ -42,19 +42,13 @@ void SqliteConnection::forEachTable(const function<void(string)>& perform)
 
 bool SqliteConnection::connect()
 {
-    bool output = false;
-    
     if(connection == nullptr && checkIfValidSqlDatabase())
     {
         sqlite3* newConnection;
-        if (sqlite3_open(connectionString.c_str(), &newConnection) == SQLITE_OK)
-        {
-            connection = newConnection;
-            output = true;
-        }
+        if (sqlite3_open(connectionString.c_str(), &newConnection) == SQLITE_OK) connection = newConnection;
     }
 
-    return output;
+    return isConnected();
 }
 
 void SqliteConnection::disconnect()
@@ -183,7 +177,7 @@ void SqliteConnection::performUpdate(string query)
 
 void SqliteConnection::performUpdate(string query, vector<string> inputs)
 {
-        if (connection != nullptr)
+    if (connection != nullptr)
     {
         auto dbConnection = (sqlite3*)connection;
         sqlite3_stmt* statement = nullptr;
