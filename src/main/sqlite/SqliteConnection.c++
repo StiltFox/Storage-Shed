@@ -6,8 +6,7 @@ using namespace StiltFox::Scribe;
 using namespace StiltFox::StorageShed;
 using namespace std;
 
-SqliteConnection::SqliteConnection(const std::string& connection) : SqliteConnection(connection.c_str())
-{}
+SqliteConnection::SqliteConnection(const string& connection) : SqliteConnection(connection.c_str()) {}
 
 SqliteConnection::SqliteConnection(const char* connection)
 {
@@ -178,7 +177,7 @@ void SqliteConnection::performUpdate(string query)
 
 void SqliteConnection::performUpdate(string query, vector<string> inputs)
 {
-        if (connection != nullptr)
+    if (connection != nullptr)
     {
         auto dbConnection = (sqlite3*)connection;
         sqlite3_stmt* statement = nullptr;

@@ -1,5 +1,6 @@
 #ifndef StiltFox_UniversalLibrary_SqliteConnection
 #define StiltFox_UniversalLibrary_SqliteConnection
+#include <string>
 #include <functional>
 #include "DatabaseConnection.h++"
 
@@ -11,8 +12,8 @@ namespace StiltFox::StorageShed
         void forEachTable(const std::function<void(std::string)>&);
 
         public:
-        SqliteConnection(const char* connection);
         SqliteConnection(const std::string& connection);
+        SqliteConnection(const char* connection);
 
         bool connect() override;
         void disconnect() override;
