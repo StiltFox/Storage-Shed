@@ -1,4 +1,5 @@
 # Stilt Fox&reg; Storage Shed
+#### Version 2.x.x
 Stilt Fox&reg; Storage Shed is a C++ library made with the aim of creating a universal database api. This api which is provided by modules/DatabaseConnection.h++ will over time
 be implemented by different databases as Stilt Fox&reg; uses them in other projects. This is a project that used to be a part of Stilt Fox&reg; Universal library, however
 this project was split into many smaller ones for better maintainability and modularity.

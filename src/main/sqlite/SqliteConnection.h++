@@ -6,10 +6,13 @@
 
 namespace StiltFox::StorageShed
 {
+    /*******************************************************************************************************************
+     *
+     ******************************************************************************************************************/
     class SqliteConnection : public DatabaseConnection
     {
         bool checkIfValidSqlDatabase();
-        void forEachTable(const std::function<void(std::string)>&);
+        void forEachTable(const std::function<void(std::string)>&) const;
 
         public:
         SqliteConnection(const std::string& connection);
@@ -17,16 +20,19 @@ namespace StiltFox::StorageShed
 
         bool connect() override;
         void disconnect() override;
-        std::unordered_set<std::string> validate(std::unordered_map<std::string, std::unordered_map<std::string, std::string>>) override;
-        std::unordered_map<std::string, std::unordered_map<std::string, std::string>> getMetaData() override;
-        void performUpdate(std::string) override;
-        void performUpdate(std::string, std::vector<std::string>) override;
-        std::vector<std::unordered_map<std::string, std::string>> performQuery(std::string) override;
-        std::vector<std::unordered_map<std::string, std::string>> performQuery(std::string, std::vector<std::string>) override;
-        std::unordered_map<std::string,std::vector<std::unordered_map<std::string, std::string>>> getAllData() override;
+        Data::Result<void*> startTransaction() override;
+        Data::Result<void*> rollbackTransaction() override;
+        Data::Result<void*> commitTransaction() override;
+        Data::Result<void*> performUpdate(std::string statement) override;
+        Data::Result<void*> performUpdate(const Data::StructuredQuery& statement) override;
+        std::unordered_set<std::string> validate(Data::TableDefinitions tableDefinitions, bool strict) override;
+        Data::Result<Data::TableDefinitions> getMetaData() override;
+        Data::Result<Data::QueryReturnData> performQuery(std::string query) override;
+        Data::Result<Data::QueryReturnData> performQuery(Data::StructuredQuery query) override;
+        Data::Result<Data::MultiTableData> getAllData() override;
 
         SqliteConnection& operator=(const std::string& connection);
-        ~SqliteConnection();
+        ~SqliteConnection() override;
     };
 }
 
