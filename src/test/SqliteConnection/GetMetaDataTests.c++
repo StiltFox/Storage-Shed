@@ -1,13 +1,19 @@
+/*******************************************************
+* Created by Cryos on 2/16/25.
+* Copyright 2025 Stilt Fox® LLC
+*
+* See LICENSE on root project directory for terms
+* of use.
+********************************************************/
 #include <gtest/gtest.h>
-#include <Stilt_Fox/Scribe/TempFile.h++>
 #include <sqlite3.h>
-#include <filesystem>
-#include <string>
+#include <Stilt_Fox/Scribe/TempFile.h++>
 #include "SqliteConnection.h++"
 
-using namespace StiltFox::StorageShed;
-using namespace StiltFox::Scribe;
 using namespace std;
+using namespace StiltFox::Scribe;
+using namespace StiltFox::StorageShed;
+using namespace StiltFox::StorageShed::Data;
 
 string createFileData = "CREATE TABLE IF NOT EXISTS FILEDATA (hashcode VARCHAR(255) NOT NULL,title VARCHAR(255),trash BOOLEAN NOT NULL,CONSTRAINT FILE_DATA_PRIMARY_KEY PRIMARY KEY (hashcode));";
 string createFileTag = "CREATE TABLE IF NOT EXISTS FILETAG (filetagid VARBINARY NOT NULL,name VARCHAR(255) NOT NULL,categoryid VARBINARY NOT NULL,CONSTRAINT FILE_TAG_PRIMARY_KEY PRIMARY KEY (filetagid),CONSTRAINT FILE_TAG_FK_CATEGORY_ID FOREIGN KEY (categoryid) REFERENCES tagcategory(categoryid) ON DELETE RESTRICT ON UPDATE RESTRICT);";
@@ -27,7 +33,7 @@ SqliteConnection setupDatabase(File databasePath)
     sqlite3_prepare(connection, createFileData.c_str(), createFileData.length(), &createFileStmt, nullptr);
     sqlite3_step(createFileStmt);
     sqlite3_finalize(createFileStmt);
-    
+
     sqlite3_prepare(connection, createFileTag.c_str(), createFileTag.length(), &createTagStmt, nullptr);
     sqlite3_step(createTagStmt);
     sqlite3_finalize(createTagStmt);
@@ -44,44 +50,45 @@ SqliteConnection setupDatabase(File databasePath)
     return databasePath.getPath();
 }
 
-TEST(SqliteConnection, performQuery_will_return_the_results_of_a_query_in_string_form)
+TEST(SqliteConnection, getMetaData_gets_the_metadata_from_a_database)
 {
-    //given we have a database connection and some data
-    TemporaryFile database = ".sqliteConnection_test_database_02.db";
+    //given we have a database to query
+    const TemporaryFile database = ".sfdb_50063d12f27c4fd08bee7dcf7ca04910";
     SqliteConnection connection = setupDatabase(database);
 
-    //when we perform a query
+    //when we get the metadata for the database
     connection.connect();
-    vector<unordered_map<string,string>> actual = connection.performQuery("Select * from FILEDATA;", vector<string>{});
+    const auto actual = connection.getMetaData();
 
-    //then we get back the data from the query
-    EXPECT_EQ(actual, (vector<unordered_map<string,string>>{{{"hashcode", "abc"}, {"title", "scp-009"}, {"trash", "0"}}, {{"hashcode", "asd"}, {"title", "scp-000"}, {"trash", "1"}}}));
+    //then we get back a map of all the tables and columns
+    const Result<TableDefinitions> expected =
+        {
+            true,
+            true,
+        "select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('FILEDATA'); select * from pragma_table_info('FILETAG');",
+    {
+            {"FILEDATA",{{"hashcode", "VARCHAR(255)"}, {"title", "VARCHAR(255)"}, {"trash", "BOOLEAN"}}},
+            {"FILETAG",{{"filetagid", "VARBINARY"},{"name", "VARCHAR(255)"},{"categoryid", "VARBINARY"}}}
+           }
+        };
+    EXPECT_EQ(actual, expected);
 }
 
-TEST(SqliteConnection, performQuery_will_execute_a_parameterized_query)
+TEST(SqliteConnection, getMetaData_will_return_success_false_and_connected_false_if_the_database_is_not_connected)
 {
-    //given we have a database connection with some data
-    TemporaryFile database = ".sqliteConnection_test_database_03.db";
+    //given we have a database that we do not connect to
+    const TemporaryFile database = ".sfdb_c54c5dcd21fb4da69745d841e809945d";
     SqliteConnection connection = setupDatabase(database);
 
-    //when we perform a parameterized query
-    connection.connect();
-    vector<unordered_map<string,string>> actual = connection.performQuery("Select title from FILEDATA where trash = ?", vector<string>{"1"});
+    //when we get the metadata for the database
+    const auto actual = connection.getMetaData();
 
-    //then we get back the data from the query
-    EXPECT_EQ(actual, (vector<unordered_map<string,string>>{{{"title", "scp-000"}}}));
-}
-
-TEST(SqliteConnection, getAllData_will_get_all_data_from_the_database)
-{
-    //given we have a database connection with some data
-    TemporaryFile database = ".sqliteConnection_test_database_04.db";
-    SqliteConnection connection = setupDatabase(database);
-
-    //when we get all the data
-    connection.connect();
-    auto actual = connection.getAllData();
-
-    //then we get back all the data in the database
-    EXPECT_EQ(actual, (unordered_map<string,vector<unordered_map<string,string>>>{{"FILETAG",{}},{"FILEDATA",{{{"trash","0"},{"title","scp-009"},{"hashcode","abc"}},{{"trash","1"},{"title","scp-000"},{"hashcode","asd"}}}}}));
+    //then we get back that we are not connected and the operation was not a success
+    const Result<TableDefinitions> expected = {
+        false,
+        false,
+        "",
+        {}
+    };
+    EXPECT_EQ(expected, actual);
 }

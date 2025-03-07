@@ -44,7 +44,7 @@ namespace StiltFox::StorageShed
         template <typename T>
         bool operator==(Result<T> lhs, Result<T> rhs)
         {
-            return lhs.success == rhs.success && lhs.connected == rhs.connected && lhs.data == rhs.data;
+            return lhs.success == rhs.success && lhs.connected == rhs.connected && lhs.data == rhs.data && lhs.performedQuery == rhs.performedQuery;
         }
 
         /***************************************************************************************************************
@@ -177,10 +177,6 @@ namespace StiltFox::StorageShed
          *         database is not connected.
          **************************************************************************************************************/
         virtual Data::Result<Data::MultiTableData> getAllData() = 0;
-        /***************************************************************************************************************
-         * This is the deconstructor for this class. This will destroy the object and close the connection.
-         **************************************************************************************************************/
-        virtual ~DatabaseConnection() = 0;
 
         bool isConnected()
         {

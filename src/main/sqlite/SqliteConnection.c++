@@ -31,12 +31,13 @@ bool SqliteConnection::checkIfValidSqlDatabase()
     return dbFile.readFirstNCharacters(16) == "SQLite format 3\000" || dbFile.getSize() == 0;
 }
 
-void SqliteConnection::forEachTable(const function<void(string)>& perform) const
+void SqliteConnection::forEachTable(const function<void(string)>& perform, string* queryTracker) const
 {
     if (connection != nullptr)
     {
         auto dbConnection = (sqlite3*)connection;
         sqlite3_stmt* statement = nullptr;
+        if (queryTracker != nullptr) *queryTracker += "select tbl_name from sqlite_schema where type = 'table';";
 
         if (sqlite3_prepare(dbConnection, "select tbl_name from sqlite_schema where type = 'table';", -1, &statement, nullptr) == SQLITE_OK)
         {
@@ -87,23 +88,8 @@ Result<void*> SqliteConnection::performUpdate(const string statement)
 
 Result<void*> SqliteConnection::performUpdate(const StructuredQuery& statement)
 {
-    Result<void*> output = {false, false, "", nullptr};
-
-    if (connection != nullptr)
-    {
-        output.connected = true;
-        sqlite3_stmt* preppedStatement = nullptr;
-
-        if (sqlite3_prepare((sqlite3*)connection, statement.query.c_str(), -1, &preppedStatement, nullptr) == SQLITE_OK)
-        {
-            for(int x=0; x<statement.parameters.size(); x++) sqlite3_bind_text(preppedStatement, x+1, statement.parameters[x].c_str(), statement.parameters[x].size(), SQLITE_STATIC);
-            output.performedQuery = sqlite3_sql(preppedStatement);
-            sqlite3_finalize(preppedStatement);
-            output.success = true;
-        }
-    }
-
-    return output;
+    const Result<QueryReturnData> values = performQuery(statement);
+    return {values.success, values.connected, values.performedQuery, nullptr};
 }
 
 Result<TableDefinitions> SqliteConnection::getMetaData()
@@ -128,8 +114,10 @@ Result<TableDefinitions> SqliteConnection::getMetaData()
                     const char* columnText = (char*)sqlite3_column_text(statement, 2);
                     output.data[table][(char*)sqlite3_column_text(statement,1)] = columnText == nullptr ? "" : columnText;
                 }
+                if (!output.performedQuery.empty()) output.performedQuery += " ";
+                output.performedQuery += sqlite3_expanded_sql(statement);
                 sqlite3_reset(statement);
-            });
+            }, &output.performedQuery);
         }
         else
         {
@@ -138,10 +126,6 @@ Result<TableDefinitions> SqliteConnection::getMetaData()
 
         sqlite3_finalize(statement);
         output.success = true;
-    }
-    else
-    {
-        output.performedQuery = "select tbl_name from sqlite_schema where type = 'table';";
     }
 
     return output;
@@ -178,118 +162,83 @@ unordered_set<string> SqliteConnection::validate(TableDefinitions tableDefinitio
 
         for (auto const&[tableName, columnData] : tableDefinitions)
         {
-            
+            if (metaData.data.contains(tableName))
+            {
+                for (auto const&[columnName, columnType] : columnData)
+                {
+                    if (!metaData.data[tableName].contains(columnName))
+                    {
+                        if(metaData.data[tableName][columnName] != columnType)
+                            output.emplace("Column " + columnName + " in table " + tableName +
+                                " is the wrong type; expected: " + columnType + " actual: " + metaData.data[tableName][columnName]);
+                    }
+                    else
+                    {
+                        output.emplace("Missing column in " + tableName + ": " + columnName);
+                    }
+                }
+            }
+            else
+            {
+                output.emplace("Missing table " + tableName);
+            }
         }
     }
 
     return output;
 }
 
-// std::unordered_set<std::string> SqliteConnection::validate(TableDefinitions tableDefinitions, bool strict)
-// {
-//     unordered_set<string> output;
-//     Result<TableDefinitions> metadata = getMetaData();
-//
-//     for (auto const&[tableName, columnData] : metadata)
-//     {
-//         if (validStructure.contains(tableName))
-//         {
-//             for (auto const&[columnName, columnType] : columnData)
-//             {
-//                 if(validStructure[tableName].contains(columnName))
-//                 {
-//                     if (validStructure[tableName][columnName] != columnType)
-//                         output.insert("Column " + columnName + " in table " + tableName + " is the wrong type; expected: " + validStructure[tableName][columnName] + " actual: " + columnType);
-//                 }
-//                 else
-//                 {
-//                     output.insert("Unwanted column in " + tableName + ": " + columnName);
-//                 }
-//             }
-//         }
-//         else
-//         {
-//             output.insert("Unwanted table " + tableName);
-//         }
-//     }
-//
-//     for (auto const&[tableName, columnData] : validStructure)
-//     {
-//         if (metadata.contains(tableName))
-//         {
-//             for (auto const&[columnName, columnType] : columnData)
-//                 if (!metadata[tableName].contains(columnName)) output.insert("Misssing column in " + tableName + " type " + columnType);
-//         }
-//         else
-//         {
-//             output.insert("Missing table " + tableName);
-//         }
-//     }
-//
-//     return output;
-// }
+Result<QueryReturnData> SqliteConnection::performQuery(string query)
+{
+    const StructuredQuery structuredQuery = {query, {}};
+    return performQuery(structuredQuery);
+}
 
-// vector<unordered_map<string,string>> SqliteConnection::performQuery(string query)
-// {
-//     return performQuery(query, vector<string>{});
-// }
-//
-// vector<unordered_map<string,string>> SqliteConnection::performQuery(string query, vector<string> inputs)
-// {
-//     vector<unordered_map<string,string>> output;
-//
-//     if (connection != nullptr)
-//     {
-//         auto dbConnection = (sqlite3*)connection;
-//         sqlite3_stmt* statement = nullptr;
-//
-//         if (sqlite3_prepare(dbConnection, query.c_str(), -1, &statement, nullptr) == SQLITE_OK)
-//         {
-//             for(int x=0; x<inputs.size(); x++) sqlite3_bind_text(statement, x+1, inputs[x].c_str(), inputs[x].size(), SQLITE_STATIC);
-//
-//             while (sqlite3_step(statement) == SQLITE_ROW)
-//             {
-//                 int columns = sqlite3_data_count(statement);
-//                 output.emplace_back();
-//                 for (int z=0; z < columns; z++)
-//                 {
-//                     char* columnValue = (char*)sqlite3_column_text(statement, z);
-//                     output[output.size()-1][(char*)sqlite3_column_name(statement, z)] = columnValue == nullptr ? "" : columnValue;
-//                 }
-//             }
-//         }
-//
-//         sqlite3_finalize(statement);
-//     }
-//
-//     return output;
-// }
+Result<QueryReturnData> SqliteConnection::performQuery(StructuredQuery structuredQuery)
+{
+    Result<QueryReturnData> output = {false, false, structuredQuery.query, {}};
 
-// void SqliteConnection::performUpdate(string query, vector<string> inputs)
-// {
-//     if (connection != nullptr)
-//     {
-//         auto dbConnection = (sqlite3*)connection;
-//         sqlite3_stmt* statement = nullptr;
-//
-//         if (sqlite3_prepare(dbConnection, query.c_str(), -1, &statement, nullptr) == SQLITE_OK)
-//         {
-//             for(int x=0; x<inputs.size(); x++) sqlite3_bind_text(statement, x+1, inputs[x].c_str(), inputs[x].size(), SQLITE_STATIC);
-//             sqlite3_step(statement);
-//         }
-//
-//         sqlite3_finalize(statement);
-//     }
-// }
-//
-// unordered_map<string,vector<unordered_map<string,string>>> SqliteConnection::getAllData()
-// {
-//     unordered_map<string,vector<unordered_map<string,string>>> output;
-//
-//     forEachTable([&output, this](const string& table)
-//     {
-//         output[table] = this->performQuery("select * from " + table + ";");
-//     });
-//
-//     return output;
-// }
+    if (connection != nullptr)
+    {
+        output.connected = true;
+        auto dbConnection = (sqlite3*)connection;
+        sqlite3_stmt* statement = nullptr;
+
+        if (sqlite3_prepare(dbConnection, structuredQuery.query.c_str(), -1, &statement, nullptr) == SQLITE_OK)
+        {
+            for (int x=0; x<structuredQuery.parameters.size(); x++)
+                sqlite3_bind_text(statement, x+1, structuredQuery.parameters[x].c_str(), structuredQuery.parameters[x].size(), SQLITE_STATIC);
+
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                int columns = sqlite3_data_count(statement);
+                output.data.emplace_back();
+                for (int z=0; z<columns; z++)
+                {
+                    char* columnValue = (char*)sqlite3_column_text(statement, z);
+                    output.data[output.data.size() - 1][(char*)sqlite3_column_name(statement, z)] =
+                        columnValue == nullptr ? "" : columnValue;
+                }
+            }
+
+            output.performedQuery = sqlite3_expanded_sql(statement);
+            output.success = sqlite3_finalize(statement) == SQLITE_OK;
+        }
+    }
+
+    return output;
+}
+
+Result<MultiTableData> SqliteConnection::getAllData()
+{
+    Result<MultiTableData> output = {false, false, "", {}};
+
+    forEachTable([&output, this](const string& table)
+    {
+        auto tableData = this->performQuery("select * from " + table + ";");
+        output.data[table] = tableData.data;
+        output.success &= tableData.success;
+    });
+
+    return output;
+}

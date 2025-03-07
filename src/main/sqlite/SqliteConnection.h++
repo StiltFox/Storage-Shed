@@ -7,12 +7,12 @@
 namespace StiltFox::StorageShed
 {
     /*******************************************************************************************************************
-     *
+     * This class is an SQLite implementation of DatabaseConnection.
      ******************************************************************************************************************/
     class SqliteConnection : public DatabaseConnection
     {
         bool checkIfValidSqlDatabase();
-        void forEachTable(const std::function<void(std::string)>&) const;
+        void forEachTable(const std::function<void(std::string)>&, std::string* = nullptr) const;
 
         public:
         SqliteConnection(const std::string& connection);
@@ -32,7 +32,7 @@ namespace StiltFox::StorageShed
         Data::Result<Data::MultiTableData> getAllData() override;
 
         SqliteConnection& operator=(const std::string& connection);
-        ~SqliteConnection() override;
+        ~SqliteConnection();
     };
 }
 
