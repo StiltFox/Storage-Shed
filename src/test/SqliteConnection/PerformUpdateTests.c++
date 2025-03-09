@@ -176,8 +176,120 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_fill_in_blank_values_if_no_parameters_are_provided_in_StructuredQuery)
+    TEST(SqliteConnection, performUpdate_will_fill_in_null_values_if_no_parameters_are_provided_in_StructuredQuery)
     {
+        //given we have a database and a structured query with no parameters
+        const TemporaryFile database = ".sfdb_51902af9363745b395457783b03fbed1";
+        const StructuredQuery structuredQuery = {"insert into test(id) values (?)", {}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
 
+        //when we perform the update
+        const auto actual = connection.performUpdate(structuredQuery);
+
+        //then we get back that the value is null
+        const Result<void*> expected =
+        {
+            true,
+            true,
+            "insert into test(id) values (NULL)",
+            nullptr
+        };
+        EXPECT_EQ(expected, actual);
+    }
+
+    TEST(SqliteConnection, performUpdate_will_ignore_extra_parameters_in_StructuredQuery)
+    {
+        //given we have a database and a structured query with too many parrameters
+        const TemporaryFile database = ".sfdb_1103ad444f9d4b01832f6819c2fa14b7";
+        const StructuredQuery structuredQuery = {"insert into test(id) values (?)", {"5", "10"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform the update
+        const auto actual = connection.performUpdate(structuredQuery);
+
+        //then we get back that the query was a success and only the needed values are used
+        const Result<void*> expected =
+        {
+            true,
+            true,
+            "insert into test(id) values ('5')",
+            nullptr
+        };
+        EXPECT_EQ(expected, actual);
+    }
+
+    TEST(SqliteConnection, performUpdate_will_return_connected_false_and_success_false_if_the_database_is_not_connected_and_a_StructuredQuery_is_passed_in)
+    {
+        //given we have a disconnected database and a structured query
+        const TemporaryFile database = ".sfdb_81e8653c16b24d1b91392883a9430ba3";
+        const StructuredQuery structuredQuery = {"insert into test(id) values (?)", {"5"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+
+        //when we perform the update
+        const auto actual = connection.performUpdate(structuredQuery);
+
+        //then we get back a success and connected value of false
+        const Result<void*> expected =
+        {
+            false,
+            false,
+            "insert into test(id) values (?)",
+            nullptr
+        };
+        EXPECT_EQ(expected, actual);
+    }
+
+    TEST(SqliteConnection, performUpdate_will_return_connected_true_and_success_false_when_a_bad_sql_statement_is_passed_via_StructruedQuery)
+    {
+        //given we have a connected database and the sql is bad
+        const TemporaryFile database = ".sfdb_a3eb75d8fa374cdba3fe060dd485b026";
+        const StructuredQuery structuredQuery = {"bad sql", {"5"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform the update
+        const auto actual = connection.performUpdate(structuredQuery);
+
+        //then we get back a connected of true and a success of false
+        const Result<void*> expected =
+        {
+            false,
+            true,
+            "bad sql",
+            nullptr
+        };
+        EXPECT_EQ(expected, actual);
+    }
+
+    TEST(SqliteConnection, performUpdate_will_perform_the_passed_in_StructuredQuery)
+    {
+        //given we have a database and connect to it
+        const TemporaryFile database = ".sfdb_4f5c1aa7d7c740a39854e58022e68dd7";
+        const StructuredQuery structuredQuery = {"insert into test(id) values (?);", {"1"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform an update
+        const auto actual = connection.performUpdate(structuredQuery);
+
+        //then the update is performed and the data is saved
+        const Result<void*> expected = {
+            true,
+            true,
+            "insert into test(id) values ('1');",
+            nullptr
+        };
+        const QueryReturnData expectedData = {
+            {
+                {"id", "3"}
+            },
+            {
+                    {"id", "1"}
+            }
+        };
+        EXPECT_EQ(expected, actual);
+        EXPECT_EQ(expectedData, testProcedure(database.getPath()));
     }
 }
