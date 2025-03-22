@@ -166,7 +166,7 @@ unordered_set<string> SqliteConnection::validate(TableDefinitions tableDefinitio
             {
                 for (auto const&[columnName, columnType] : columnData)
                 {
-                    if (!metaData.data[tableName].contains(columnName))
+                    if (metaData.data[tableName].contains(columnName))
                     {
                         if(metaData.data[tableName][columnName] != columnType)
                             output.emplace("Column " + columnName + " in table " + tableName +

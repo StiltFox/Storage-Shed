@@ -275,13 +275,15 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const auto actual = connection.performUpdate(structuredQuery);
 
         //then the update is performed and the data is saved
-        const Result<void*> expected = {
+        const Result<void*> expected =
+        {
             true,
             true,
             "insert into test(id) values ('1');",
             nullptr
         };
-        const QueryReturnData expectedData = {
+        const QueryReturnData expectedData =
+        {
             {
                 {"id", "3"}
             },
@@ -291,5 +293,27 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         };
         EXPECT_EQ(expected, actual);
         EXPECT_EQ(expectedData, testProcedure(database.getPath()));
+    }
+
+    TEST(SqliteConnection, performUpdate_will_not_return_any_data_even_if_the_StructuredQuery_does)
+    {
+        //given we have a database and connect to it
+        const TemporaryFile database = ".sfdb_64ee92b0a9394a6190d0e66febe489cf";
+        const StructuredQuery structuredQuery = {"select * from test where id = ?", {"3"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform the update
+        const auto actual = connection.performUpdate(structuredQuery);
+
+        //then the update is performed but no data is returned
+        const Result<void*> expected =
+        {
+            true,
+            true,
+            "select * from test where id = '3'",
+            nullptr
+        };
+        EXPECT_EQ(expected, actual);
     }
 }
