@@ -322,7 +322,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         const auto actual = connection.validate({}, true);
 
         //then we get back that the database is not connected
-        const unordered_set<string> expected = {"Database not connected"};
+        const unordered_set<string> expected = {"Failed to Load Metadata .sfdb_4f92050777cd4f13acde2c3f2e1007eb", "Database not connected .sfdb_4f92050777cd4f13acde2c3f2e1007eb"};
         EXPECT_EQ(expected, actual);
     }
 }
