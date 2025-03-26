@@ -233,12 +233,19 @@ Result<MultiTableData> SqliteConnection::getAllData()
 {
     Result<MultiTableData> output = {false, false, "", {}};
 
-    forEachTable([&output, this](const string& table)
+    if (connection != nullptr)
     {
-        auto tableData = this->performQuery("select * from " + table + ";");
-        output.data[table] = tableData.data;
-        output.success &= tableData.success;
-    });
+        output.connected = true;
+        output.success = true; //this primes the boolean, as 'and' logic is used to detect a failure.
+        forEachTable([&output, this](const string& table)
+        {
+            auto tableData = this->performQuery("select * from " + table + ";");
+            output.data[table] = tableData.data;
+            output.success &= tableData.success;
+            if (!output.performedQuery.empty()) output.performedQuery += " ";
+            output.performedQuery += tableData.performedQuery;
+        });
+    }
 
     return output;
 }

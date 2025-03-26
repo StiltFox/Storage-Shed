@@ -13,6 +13,8 @@ namespace StiltFox::StorageShed::Data
 {
     void PrintTo(const Result<void*>& result, std::ostream* outputStream);
     void PrintTo(const Result<TableDefinitions>& result, std::ostream* outputStream);
+    void PrintTo(const Result<QueryReturnData>& result, std::ostream* outputStream);
+    void PrintTo(const Result<MultiTableData>& result, std::ostream* outputStream);
 }
 
 #endif

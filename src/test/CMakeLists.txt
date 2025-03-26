@@ -10,6 +10,8 @@ if(NOT SFSkipTesting)
             SqliteConnection/GetMetaDataTests.c++
             SqliteConnection/PerformUpdateTests.c++
             SqliteConnection/validateTests.c++
+            SqliteConnection/performQueryTests.c++
+            SqliteConnection/GetAllDataTests.c++
     )
 
     target_link_libraries(Tests

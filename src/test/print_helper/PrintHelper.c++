@@ -34,4 +34,19 @@ namespace StiltFox::StorageShed::Data
         outputText["data"] = result.data;
         *outputStream << outputText.dump(4) << endl;
     }
+
+    void PrintTo(const Result<QueryReturnData>& result, ostream* outputStream)
+    {
+        json outputText = resultToJsonGeneric(result);
+        outputText["data"] = result.data;
+        *outputStream << outputText.dump(4) << endl;
+    }
+
+    void PrintTo(const Result<MultiTableData>& result, std::ostream* outputStream)
+    {
+        json outputText = resultToJsonGeneric(result);
+        outputText["data"] = result.data;
+        *outputStream << outputText.dump(4) << endl;
+    }
+
 }
