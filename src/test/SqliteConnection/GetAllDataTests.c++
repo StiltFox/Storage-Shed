@@ -53,7 +53,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         return databasePath.getPath();
     }
 
-    TEST(SqliteConnection, getAllData_will_return_success_false_and_connected_false_if_the_datbase_is_not_connected)
+    TEST(getAllData, will_return_success_false_and_connected_false_if_the_datbase_is_not_connected)
     {
         //given we have a database that we do not connect to
         const TemporaryFile database = ".sfdb_f3da8544995d4dbe8823e905c7707403";
@@ -73,7 +73,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, getAllData_will_return_all_data_from_the_database_when_we_are_connected_to_the_database)
+    TEST(getAllData, will_return_all_data_from_the_database_when_we_are_connected_to_the_database)
     {
         //given we have a database that we are connected to
         const TemporaryFile database = ".sfdb_d7f3e072ce834de286495307ab141118";

@@ -20,7 +20,7 @@ namespace StiltFox::StorageShed
         // maps of maps of maps can get a little long. So here's some type defs.
         typedef std::unordered_map<std::string, std::string> Row, RowDefinition;
         typedef std::vector<Row> QueryReturnData;
-        typedef std::unordered_map<std::string, QueryReturnData> MultiTableData;
+        typedef std::unordered_map<std::string, Data::QueryReturnData> MultiTableData;
         typedef std::unordered_map<std::string, RowDefinition> TableDefinitions;
 
         /***************************************************************************************************************
@@ -64,13 +64,8 @@ namespace StiltFox::StorageShed
      * This class represents a relational database style connection. This class must be implemented by each supported
      * database.
      ******************************************************************************************************************/
-    class DatabaseConnection
+    struct DatabaseConnection
     {
-        protected:
-        void* connection = nullptr;
-        std::string connectionString;
-
-        public:
         /***************************************************************************************************************
          * Open this connection to the database. No operations will occur without this happening.
          *
@@ -171,22 +166,17 @@ namespace StiltFox::StorageShed
          **************************************************************************************************************/
         virtual Data::Result<Data::QueryReturnData> performQuery(Data::StructuredQuery query) = 0;
         /***************************************************************************************************************
-         * This function will return all data stored in the database.
+         * This function will return all data stored in the database. This can be slow and memory consuming on larger
+         * databases. It is recommended to only use this for testing purposes.
          *
-         * @return a result object holding all data stored in th database, sorted by table. This will fail if the
+         * @return a result object holding all data stored in the database, sorted by table. This will fail if the
          *         database is not connected.
          **************************************************************************************************************/
         virtual Data::Result<Data::MultiTableData> getAllData() = 0;
 
-        bool isConnected()
-        {
-            return connection != nullptr;
-        }
+        virtual bool isConnected() = 0;
 
-        std::string getConnectionString()
-        {
-            return connectionString;
-        }
+        virtual std::string getConnectionString() = 0;
     };
 }
 

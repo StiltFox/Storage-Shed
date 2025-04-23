@@ -15,7 +15,7 @@ using namespace StiltFox::StorageShed;
 
 namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
 {
-    TEST(SqliteConnection, starting_a_transaction_will_register_the_changes_to_a_database_if_commited)
+    TEST(transaction, starting_a_transaction_will_register_the_changes_to_a_database_if_commited)
     {
         //Given we have a database
         TemporaryFile databaseFile = ".sfdb_fc43d2287b214793a0d3358bd9015bcb";
@@ -40,7 +40,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         EXPECT_EQ(expected, connection.getMetaData());
     }
 
-    TEST(SqliteConnection, starting_a_transaction_then_rolling_it_back_will_remove_change_and_close_the_transaction)
+    TEST(transaction, starting_a_transaction_then_rolling_it_back_will_remove_change_and_close_the_transaction)
     {
         //Given we have a database
         TemporaryFile databaseFile = ".sfdb_00c33ce439914f179ee10046be760165";
@@ -67,7 +67,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, starting_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
+    TEST(transaction, starting_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
     {
         //given we have a database and we are not connected
         TemporaryFile databaseFile = ".sfdb_251e7bcab2564f07b6e7a29104538d9b";
@@ -81,7 +81,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, rolling_back_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
+    TEST(transaction, rolling_back_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
     {
         //given we have a database and we are not connected
         TemporaryFile databaseFile = ".sfdb_2ddf01329da542e5bfed38681bb192c1";
@@ -95,7 +95,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, committing_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
+    TEST(transaction, committing_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
     {
         //given we have a database and we are not connected
         TemporaryFile databaseFile = ".sfdb_e0c88b738cb74c0fa3142e6dbe9e96f8";
@@ -109,7 +109,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, committing_a_transaction_while_a_transaction_is_not_in_place_will_return_success_of_false)
+    TEST(transaction, committing_a_transaction_while_a_transaction_is_not_in_place_will_return_success_of_false)
     {
         //given we have a database and we are connected
         TemporaryFile databaseFile = ".sfdb_36c76c223536484d95ad556e3f98309d";
@@ -124,7 +124,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, rolling_back_a_transaction_while_a_transaction_is_not_in_place_will_return_success_of_false)
+    TEST(transaction, rolling_back_a_transaction_while_a_transaction_is_not_in_place_will_return_success_of_false)
     {
         //given we have a database and we are connected
         TemporaryFile databaseFile = ".sfdb_8942569fcb044098b46de70e7d004152";

@@ -10,6 +10,8 @@ Stilt Fox&reg; is trademarked. You may not use the Stilt Fox™ name, however th
 You may contribute to this library, however all contributions will share the same license as this library and you agree that Stilt Fox&reg; owns the copyright for any contributions.
 
 ## Prerequisites
+### Main Program
+These libraries are required for the core functionality of this project.
 - CMake
   - version 3.5.0 or greater
 - C++ compiler
@@ -22,11 +24,18 @@ You may contribute to this library, however all contributions will share the sam
     - You can obtain this using `sudo apt install libsqlite3-dev`
       - Arch junkies can get their fix [here](https://archlinux.org/packages/core/x86_64/sqlite/)
     - Source code found [here](https://www.sqlite.org/index.html)
+- MariaDB Connector/C++
+  - you can obtain this [here](https://mariadb.com/downloads/connectors/connectors-data-access/cpp-connector)
+  - You can also use the package manager `yay -S mariadb-connector-cpp-git`
+### Testing
+These libraries are only needed if you're running the unit tests. To skip the unit tests, use `SFSkipTesting=true` as an
+option when compiling the code. You probably only want to do this during an installation.
 - GTests
-  - This is only required for unit testing, and can be skipped
-    - To skip, use the `SFSkipTesting=true` option when compiling
-  - You can obtain GTest by using `sudo apt install libgtest-dev`
-    - if you are not running debian based linux, or are allergic to apt... it can be found [here](https://github.com/google/googletest)
+  - You can obtain this [here](https://github.com/google/googletest)
+  - You can also use a package manager like this `sudo pacman -S gtest`
+- JSON for modern C++
+  - you can obtain this [here](https://github.com/nlohmann/json)
+  - you can also use a package manager like this `sudo pacman -S nlohmann-json`
 
 ## Installation
 The following commands will install the libraries to your system. These will exist globally to all users. If you wish to

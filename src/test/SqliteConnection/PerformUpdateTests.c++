@@ -66,7 +66,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         return returnData;
     }
 
-    TEST(SqliteConnection, performUpdate_will_return_connected_false_and_success_false_if_the_database_is_not_connected)
+    TEST(performUpdate, will_return_connected_false_and_success_false_if_the_database_is_not_connected)
     {
         //given we have a database that we don't connect to
         const TemporaryFile database = ".sfdb_a0ffc6bfd57942588a549142668b36d8";
@@ -85,7 +85,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_return_connected_true_and_success_false_if_the_sql_cannot_be_executed)
+    TEST(performUpdate, will_return_connected_true_and_success_false_if_the_sql_cannot_be_executed)
     {
         //given we have a database that we connect to
         const TemporaryFile database = ".sfdb_e4d5962190dc4038a5e5ea6a4e3ddb9d";
@@ -105,7 +105,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_never_return_any_data_even_if_the_query_does)
+    TEST(performUpdate, will_never_return_any_data_even_if_the_query_does)
     {
         //given we have a database with some data and we connect to it
         const TemporaryFile database = ".sfdb_69d08a8f2adc43efbf610bb2a762bd48";
@@ -126,7 +126,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_perform_the_passed_in_sql_statement)
+    TEST(performUpdate, will_perform_the_passed_in_sql_statement)
     {
         //given we have a database and connect to it
         const TemporaryFile database = ".sfdb_7a3e4273dbb44ac48915833b13a26cad";
@@ -155,7 +155,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expectedData, testProcedure(database.getPath()));
     }
 
-    TEST(SqliteConnection, performUpdate_will_return_the_expanded_performedQuery_statement_when_a_StructuredQuery_is_passed_in)
+    TEST(performUpdate, will_return_the_expanded_performedQuery_statement_when_a_StructuredQuery_is_passed_in)
     {
         //given we have a database and a structured query
         const TemporaryFile database = ".sfdb_81e8653c16b24d1b91392883a9430ba3";
@@ -177,7 +177,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_fill_in_null_values_if_no_parameters_are_provided_in_StructuredQuery)
+    TEST(performUpdate, will_fill_in_null_values_if_no_parameters_are_provided_in_StructuredQuery)
     {
         //given we have a database and a structured query with no parameters
         const TemporaryFile database = ".sfdb_51902af9363745b395457783b03fbed1";
@@ -199,7 +199,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_ignore_extra_parameters_in_StructuredQuery)
+    TEST(performUpdate, will_ignore_extra_parameters_in_StructuredQuery)
     {
         //given we have a database and a structured query with too many parrameters
         const TemporaryFile database = ".sfdb_1103ad444f9d4b01832f6819c2fa14b7";
@@ -221,7 +221,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_return_connected_false_and_success_false_if_the_database_is_not_connected_and_a_StructuredQuery_is_passed_in)
+    TEST(performUpdate, will_return_connected_false_and_success_false_if_the_database_is_not_connected_and_a_StructuredQuery_is_passed_in)
     {
         //given we have a disconnected database and a structured query
         const TemporaryFile database = ".sfdb_81e8653c16b24d1b91392883a9430ba3";
@@ -242,7 +242,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_return_connected_true_and_success_false_when_a_bad_sql_statement_is_passed_via_StructruedQuery)
+    TEST(performUpdate, will_return_connected_true_and_success_false_when_a_bad_sql_statement_is_passed_via_StructruedQuery)
     {
         //given we have a connected database and the sql is bad
         const TemporaryFile database = ".sfdb_a3eb75d8fa374cdba3fe060dd485b026";
@@ -264,7 +264,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, performUpdate_will_perform_the_passed_in_StructuredQuery)
+    TEST(performUpdate, will_perform_the_passed_in_StructuredQuery)
     {
         //given we have a database and connect to it
         const TemporaryFile database = ".sfdb_4f5c1aa7d7c740a39854e58022e68dd7";
@@ -296,7 +296,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         EXPECT_EQ(expectedData, testProcedure(database.getPath()));
     }
 
-    TEST(SqliteConnection, performUpdate_will_not_return_any_data_even_if_the_StructuredQuery_does)
+    TEST(performUpdate, will_not_return_any_data_even_if_the_StructuredQuery_does)
     {
         //given we have a database and connect to it
         const TemporaryFile database = ".sfdb_64ee92b0a9394a6190d0e66febe489cf";

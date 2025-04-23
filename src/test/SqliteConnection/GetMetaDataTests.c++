@@ -52,7 +52,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
         return databasePath.getPath();
     }
 
-    TEST(SqliteConnection, getMetaData_gets_the_metadata_from_a_database)
+    TEST(getMetaData, gets_the_metadata_from_a_database)
     {
         //given we have a database to query
         const TemporaryFile database = ".sfdb_50063d12f27c4fd08bee7dcf7ca04910";
@@ -76,7 +76,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
         EXPECT_EQ(actual, expected);
     }
 
-    TEST(SqliteConnection, getMetaData_will_return_success_false_and_connected_false_if_the_database_is_not_connected)
+    TEST(getMetaData, will_return_success_false_and_connected_false_if_the_database_is_not_connected)
     {
         //given we have a database that we do not connect to
         const TemporaryFile database = ".sfdb_c54c5dcd21fb4da69745d841e809945d";

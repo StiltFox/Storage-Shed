@@ -4,7 +4,13 @@ if(NOT SFSkipTesting)
 
     add_subdirectory(print_helper)
 
-    add_executable(Tests
+    add_executable(MariaDBTests
+            TestRunner.c++
+            MariaDBConnection/ConnectionInformation/ToJDBCStringTest.c++
+            MariaDBConnection/ConnectionTests.c++
+    )
+
+    add_executable(SqliteTests
             SqliteConnection/TransactionTests.c++
             SqliteConnection/ConnectionTests.c++
             SqliteConnection/GetMetaDataTests.c++
@@ -14,10 +20,21 @@ if(NOT SFSkipTesting)
             SqliteConnection/GetAllDataTests.c++
     )
 
-    target_link_libraries(Tests
+    target_link_libraries(SqliteTests
             PrintHelper
-            GTest::gtest_main
+            gtest
+            gtest_main
             StiltFox::Scribe::TempFile
+            nlohmann_json
             SqliteConnection
+    )
+
+    target_link_libraries(MariaDBTests
+            PrintHelper
+            gtest
+            gtest_main
+            StiltFox::Scribe::TempFile
+            nlohmann_json
+            MariaDBConnection
     )
 endif ()

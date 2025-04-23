@@ -42,7 +42,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         return databasePath.getPath();
     }
 
-    TEST(SqliteConnection, Validate_will_return_no_errors_with_strict_mode_enabled_and_the_expected_database_structure_is_correct)
+    TEST(validate, will_return_no_errors_with_strict_mode_enabled_and_the_expected_database_structure_is_correct)
     {
         //given we have a database with a structure that matches the expected table definitions
         const TemporaryFile database = ".sfdb_873bad6450bf412fbd3a7aaabb5e41df";
@@ -82,7 +82,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, Validate_will_return_no_errors_with_strict_mode_disabled_and_the_expected_database_structure_is_correct)
+    TEST(validate, will_return_no_errors_with_strict_mode_disabled_and_the_expected_database_structure_is_correct)
     {
         //given we have a database with a structure that matches the expected table definitions
         const TemporaryFile database = ".sfdb_99f3cb96b5c74ac1a83dd07ca7d888ae";
@@ -122,7 +122,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, validate_will_detect_excess_columns_in_tables_when_strict_mode_is_enabled)
+    TEST(validate, will_detect_excess_columns_in_tables_when_strict_mode_is_enabled)
     {
         //given we have a database with an extra column
         const TemporaryFile database = ".sfdb_2dee3f7e1f574563b0abd623ccace108";
@@ -161,7 +161,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, validate_will_not_detect_excess_columns_in_tables_when_strict_mode_is_disabled)
+    TEST(validate, will_not_detect_excess_columns_in_tables_when_strict_mode_is_disabled)
     {
         //given we have a database with an extra column
         const TemporaryFile database = ".sfdb_63be1d23b530462e9b012f3cd5f8c402";
@@ -200,7 +200,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, Validate_will_detect_an_extra_table_when_strict_mode_is_enabled)
+    TEST(validate, will_detect_an_extra_table_when_strict_mode_is_enabled)
     {
         //given we have a database with an extra table
         const TemporaryFile database = ".sfdb_217414a8b77348a0bc19f7c2952a8ca2";
@@ -233,7 +233,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, Validate_will_not_detect_an_extra_table_when_strict_mode_is_disabled)
+    TEST(validate, will_not_detect_an_extra_table_when_strict_mode_is_disabled)
     {
         //given we have a database with an extra table
         const TemporaryFile database = ".sfdb_24de43c5198146c99ad5ba962cfd8f45";
@@ -266,7 +266,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(SqliteConnection, Validate_will_detect_a_missing_table_that_was_expected_regardless_of_strict_mode)
+    TEST(validate, will_detect_a_missing_table_that_was_expected_regardless_of_strict_mode)
     {
         //given we have a database that's missing an expected table
         const TemporaryFile database = ".sfdb_24de43c5198146c99ad5ba962cfd8f45";
@@ -312,7 +312,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, nonStrict);
     }
 
-    TEST(SqliteConnection, validate_will_return_a_connected_status_of_false_and_success_of_false_if_the_database_is_disconnected)
+    TEST(validate, will_return_a_connected_status_of_false_and_success_of_false_if_the_database_is_disconnected)
     {
         //given we have a database that is not connected
         const TemporaryFile database = ".sfdb_4f92050777cd4f13acde2c3f2e1007eb";

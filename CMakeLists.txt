@@ -10,6 +10,10 @@ include(CMakePackageConfigHelpers)
 find_package(Scribe REQUIRED)
 find_package(SQLite3 REQUIRED)
 
+include_directories("/usr/include/mariadb") #path to include folder
+add_library(mariadbcpp STATIC IMPORTED)
+set_property(TARGET mariadbcpp PROPERTY IMPORTED_LOCATION "/usr/lib/libmariadbcpp.so")
+
 add_subdirectory(src)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in

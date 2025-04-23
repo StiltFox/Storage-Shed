@@ -1,4 +1,3 @@
-#include <sqlite3.h>
 #include <Stilt_Fox/Scribe/File.h++>
 #include "SqliteConnection.h++"
 
@@ -12,7 +11,10 @@ SqliteConnection::SqliteConnection(const string& connection) : SqliteConnection(
 SqliteConnection::SqliteConnection(const char* connection)
 {
     connectionString = connection;
+    this->connection = nullptr;
 }
+
+SqliteConnection::SqliteConnection(const SqliteConnection& toCopy) : SqliteConnection(toCopy.connectionString){}
 
 SqliteConnection::~SqliteConnection()
 {
@@ -25,7 +27,7 @@ SqliteConnection& SqliteConnection::operator=(const string& connection)
     return *this;
 }
 
-bool SqliteConnection::checkIfValidSqlDatabase()
+bool SqliteConnection::checkIfValidSqlDatabase() const
 {
     File dbFile = connectionString.c_str();
     return dbFile.readFirstNCharacters(16) == "SQLite format 3\000" || dbFile.getSize() == 0;
@@ -33,19 +35,16 @@ bool SqliteConnection::checkIfValidSqlDatabase()
 
 void SqliteConnection::forEachTable(const function<void(string)>& perform, string* queryTracker) const
 {
-    if (connection != nullptr)
+    auto dbConnection = connection;
+    sqlite3_stmt* statement = nullptr;
+    if (queryTracker != nullptr) *queryTracker += "select tbl_name from sqlite_schema where type = 'table';";
+
+    if (sqlite3_prepare(dbConnection, "select tbl_name from sqlite_schema where type = 'table';", -1, &statement, nullptr) == SQLITE_OK)
     {
-        auto dbConnection = (sqlite3*)connection;
-        sqlite3_stmt* statement = nullptr;
-        if (queryTracker != nullptr) *queryTracker += "select tbl_name from sqlite_schema where type = 'table';";
-
-        if (sqlite3_prepare(dbConnection, "select tbl_name from sqlite_schema where type = 'table';", -1, &statement, nullptr) == SQLITE_OK)
-        {
-            while(sqlite3_step(statement) == SQLITE_ROW) perform((char*)sqlite3_column_text(statement, 0));
-        }
-
-        sqlite3_finalize(statement);
+        while(sqlite3_step(statement) == SQLITE_ROW) perform((char*)sqlite3_column_text(statement, 0));
     }
+
+    sqlite3_finalize(statement);
 }
 
 bool SqliteConnection::connect()
@@ -61,7 +60,7 @@ bool SqliteConnection::connect()
 
 void SqliteConnection::disconnect()
 {
-    sqlite3_close((sqlite3*)connection);
+    sqlite3_close(connection);
     connection = nullptr;
 }
 
@@ -100,7 +99,7 @@ Result<TableDefinitions> SqliteConnection::getMetaData()
 
     if (connection != nullptr)
     {
-        const auto dbConnection = (sqlite3*)connection;
+        const auto dbConnection = connection;
         output.connected = true;
         sqlite3_stmt* statement = nullptr;
 
@@ -248,4 +247,14 @@ Result<MultiTableData> SqliteConnection::getAllData()
     }
 
     return output;
+}
+
+bool SqliteConnection::isConnected()
+{
+    return connection != nullptr;
+}
+
+std::string SqliteConnection::getConnectionString()
+{
+    return connectionString;
 }
