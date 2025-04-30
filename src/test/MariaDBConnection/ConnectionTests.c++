@@ -7,30 +7,12 @@
 ********************************************************/
 #include <cstdlib>
 #include <gtest/gtest.h>
-#include "MariaDBConnection.h++"
+#include "TestHelpFunctions.h++"
 
 using namespace std;
 
 namespace StiltFox::StorageShed::Tests::MariaDB_Connection::Connection
 {
-    MariaDBConnection::ConnectionInformation getConnectionInformationFromEnvironment()
-    {
-        MariaDBConnection::ConnectionInformation output;
-        const char* hostName = getenv("STILT_FOX_MARIADB_TESTS_HOSTNAME");
-        const char* databaseName = getenv("STILT_FOX_MARIADB_TESTS_DATABASE");
-        const char* portNumber = getenv("STILT_FOX_MARIADB_TESTS_PORT");
-        const char* user = getenv("STILT_FOX_MARIADB_TESTS_USER");
-        const char* password = getenv("STILT_FOX_MARIADB_TESTS_PASSWORD");
-
-        if (hostName != nullptr) output.hostName = hostName;
-        if (databaseName != nullptr) output.databaseName = databaseName;
-        if (portNumber != nullptr) output.portNumber = stoi(portNumber);
-        output.parameters["user"] = user == nullptr ? "root" : user;
-        if (password != nullptr) output.parameters["password"] = password;
-
-        return output;
-    }
-
     TEST(Connection, will_return_false_and_not_connect_if_the_database_does_not_exist)
     {
         //given we have invalid connection information

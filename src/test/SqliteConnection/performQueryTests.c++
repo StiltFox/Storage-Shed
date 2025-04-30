@@ -112,10 +112,10 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         SqliteConnection connection = setupDatabase(database.getPath());
         connection.connect();
 
-        //when we perform an update that should return data
+        //when we perform a query that should return data
         const auto actual = connection.performQuery("select * from test;");
 
-        //then we get back a successful query with no data
+        //then we get back a successful query with the appropriate data
         const Result<QueryReturnData> expected =
         {
             true,
@@ -189,10 +189,10 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         SqliteConnection connection = setupDatabase(database.getPath());
         connection.connect();
 
-        //when we perform the update
+        //when we perform the query
         const auto actual = connection.performQuery(structuredQuery);
 
-        //then we get back that the value is null
+        //then we get back that the passed in value is null
         const Result<QueryReturnData> expected =
         {
             true,

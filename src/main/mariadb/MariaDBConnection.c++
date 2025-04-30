@@ -33,7 +33,7 @@ namespace StiltFox::StorageShed
                 connectionInformation.parameters);
             output = true;
         }
-        catch (SQLException e)
+        catch (SQLException& e)
         {
             cerr << e.what() << endl;
             disconnect();
@@ -143,13 +143,13 @@ namespace StiltFox::StorageShed
     {
         const string query =
             "select"
-                "concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME,"
+                " concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME,"
                 "COLUMN_NAME,"
                 "COLUMN_TYPE"
-            "from"
-                "information_schema.COLUMNS"
-            "where"
-                "TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');";
+            " from"
+                " information_schema.COLUMNS"
+            " where"
+                " TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');";
         TableDefinitions definitions = TableDefinitions{};
         auto rawData = performQuery(query);
 
@@ -183,16 +183,17 @@ namespace StiltFox::StorageShed
                     output.data.emplace_back();
                     for (int z=0; z<columns; z++)
                     {
-                        string columnValue = results->getString(z).c_str();
-                        output.data[output.data.size() - 1][results->getMetaData()->getColumnName(z).c_str()] = columnValue;
+                        string columnValue = results->getString(z+1).c_str();
+                        output.data[output.data.size() - 1][results->getMetaData()->getColumnName(z+1).c_str()] = columnValue;
                     }
                 }
 
                 output.success = true;
             }
-            catch (...)
+            catch (SQLException e)
             {
-                //do nothing, success is already false
+                //print out error for testing purposes
+                cerr << e.what() << endl;
             }
         }
 
@@ -203,13 +204,13 @@ namespace StiltFox::StorageShed
     {
         const string tableQuery = "select concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME "
                                   "from information_schema.TABLES "
-                                  "where TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');";
+                                  "where TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema', 'sys');";
         Result<MultiTableData> output = {false, false, "", {}};
 
         auto tables = performQuery(tableQuery);
+        output.connected = tables.connected;
         if (tables.success)
         {
-            output.connected = true;
             output.success = true; //prime sucess to be used with and logic
 
             for (const auto& row : tables.data)
@@ -233,10 +234,7 @@ namespace StiltFox::StorageShed
     {
         bool output = false;
 
-        if (connection != nullptr)
-        {
-            output = !connection->isClosed();
-        }
+        if (connection != nullptr) output = !connection->isClosed();
 
         return output;
     }
