@@ -32,7 +32,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
             {
             true,
             true,
-            "select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('test');",
+            {"select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('test');"},
             {
                     {"test", {{"id", "INT"}}}
                 }
@@ -58,7 +58,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
             {
             true,
             true,
-            "select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('pickle');",
+            {"select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('pickle');"},
             {
                         {"pickle", {{"id", "INT"}}}
             }
@@ -77,7 +77,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         auto actual = connection.startTransaction();
 
         //then we get back a success and connected value of false
-        Data::Result<void*> expected = {false, false, "start transaction;", nullptr};
+        Data::Result<void*> expected = {false, false, {"start transaction;"}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
@@ -91,7 +91,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         auto actual = connection.rollbackTransaction();
 
         //then we get back a success and connected value of false
-        Data::Result<void*> expected = {false, false, "rollback transaction;", nullptr};
+        Data::Result<void*> expected = {false, false, {"rollback transaction;"}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
@@ -105,7 +105,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         auto actual = connection.commitTransaction();
 
         //then we get back a success and connected value of false
-        Data::Result<void*> expected = {false, false, "commit transaction;", nullptr};
+        Data::Result<void*> expected = {false, false, {"commit transaction;"}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
@@ -120,7 +120,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         auto actual = connection.commitTransaction();
 
         //then we get back a connected value of true and a success of false
-        Data::Result<void*> expected = {false, true, "commit transaction;", nullptr};
+        Data::Result<void*> expected = {false, true, {"commit transaction;"}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
@@ -135,7 +135,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         auto actual = connection.rollbackTransaction();
 
         //then we get back a connected value of true and a success of false
-        Data::Result<void*> expected = {false, true, "rollback transaction;", nullptr};
+        Data::Result<void*> expected = {false, true, {"rollback transaction;"}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 }

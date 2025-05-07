@@ -67,7 +67,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
             {
                 true,
                 true,
-            "select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('FILEDATA'); select * from pragma_table_info('FILETAG');",
+            {"select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('FILEDATA'); select * from pragma_table_info('FILETAG');"},
         {
                 {"FILEDATA",{{"hashcode", "VARCHAR(255)"}, {"title", "VARCHAR(255)"}, {"trash", "BOOLEAN"}}},
                 {"FILETAG",{{"filetagid", "VARBINARY"},{"name", "VARCHAR(255)"},{"categoryid", "VARBINARY"}}}
@@ -89,7 +89,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
         const Result<TableDefinitions> expected = {
             false,
             false,
-            "",
+            {""},
             {}
         };
         EXPECT_EQ(expected, actual);

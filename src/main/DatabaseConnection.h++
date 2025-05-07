@@ -20,32 +20,8 @@ namespace StiltFox::StorageShed
         // maps of maps of maps can get a little long. So here's some type defs.
         typedef std::unordered_map<std::string, std::string> Row, RowDefinition;
         typedef std::vector<Row> QueryReturnData;
-        typedef std::unordered_map<std::string, Data::QueryReturnData> MultiTableData;
+        typedef std::unordered_map<std::string, QueryReturnData> MultiTableData;
         typedef std::unordered_map<std::string, RowDefinition> TableDefinitions;
-
-        /***************************************************************************************************************
-         * In general, throwing exceptions in C++ is a bad idea. Because of this we need a way to communicate to the
-         * caller that something went wrong. IO operations are prone to going wrong.
-         *
-         * This class wraps the return value in a success check. This allows the caller to see if there was an error
-         * and what the offending query was.
-         **************************************************************************************************************/
-        template <typename T>
-        struct Result
-        {
-            bool success = false, connected = false;
-            std::string performedQuery;
-            T data;
-        };
-
-        /***************************************************************************************************************
-         * This function overrides the comparison operator for result.
-         **************************************************************************************************************/
-        template <typename T>
-        bool operator==(Result<T> lhs, Result<T> rhs)
-        {
-            return lhs.success == rhs.success && lhs.connected == rhs.connected && lhs.data == rhs.data && lhs.performedQuery == rhs.performedQuery;
-        }
 
         /***************************************************************************************************************
          * This class represents a structured query. Question marks in the query will be safely replaced with parameters
@@ -57,7 +33,48 @@ namespace StiltFox::StorageShed
             std::string query;
             // a string representation of the data to be inserted
             std::vector<std::string> parameters;
+
+            /***********************************************************************************************************
+             * This function allows someone to just assign a string to structured query.
+             **********************************************************************************************************/
+            StructuredQuery& operator= (const std::string& queryString)
+            {
+                query = queryString;
+                parameters = {};
+                return *this;
+            }
         };
+
+        /***************************************************************************************************************
+         * In general, throwing exceptions in C++ is a bad idea. Because of this we need a way to communicate to the
+         * caller that something went wrong. IO operations are prone to going wrong.
+         *
+         * This class wraps the return value in a success check. This allows the caller to see if there was an error
+         * and what the offending query was.
+         **************************************************************************************************************/
+        template <typename T>
+        struct Result
+        {
+            // Shows weather or not we could actually connect to the database or not
+            bool connected = false;
+            // errors will be printed here. Empty error text should indicate that no error occurred.
+            std::string errorText;
+            // A list of queries performed by the operation. Most of the time there's only one but some functions
+            // like getMetaData will perform many queries in one operation.
+            std::vector<StructuredQuery> performedQueries;
+            // the actual returned data from the database action.
+            T data;
+        };
+
+        /***************************************************************************************************************
+         * This function overrides the comparison operator for result.
+         **************************************************************************************************************/
+        template <typename T>
+        bool operator==(Result<T> lhs, Result<T> rhs)
+        {
+            return lhs.success == rhs.success && lhs.connected == rhs.connected && lhs.data == rhs.data &&
+                lhs.performedQuery == rhs.performedQuery;
+        }
     }
 
     /*******************************************************************************************************************
@@ -173,9 +190,18 @@ namespace StiltFox::StorageShed
          *         database is not connected.
          **************************************************************************************************************/
         virtual Data::Result<Data::MultiTableData> getAllData() = 0;
-
+        /***************************************************************************************************************
+         * This function simply returns weather or not we are currently connected to the database.
+         *
+         * @return true if we're connected, false if we're not.
+         **************************************************************************************************************/
         virtual bool isConnected() = 0;
-
+        /***************************************************************************************************************
+         * This function will get the string representation of the connection that we're using. This is the same
+         * string that you might use in other database connectivity rules, and programming languages.
+         *
+         * @return the connection string for the database.
+         **************************************************************************************************************/
         virtual std::string getConnectionString() = 0;
     };
 }

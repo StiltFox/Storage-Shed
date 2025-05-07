@@ -62,7 +62,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         {
             true,
             true,
-            "select * from test.table1",
+            {"select * from test.table1"},
             {
                 {{"id","1"},{"name","bagel"}, {"dead","0"}},
                 {{"id","2"},{"name","fork"}, {"dead","1"}},
@@ -79,21 +79,21 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         connection.connect();
 
         //when we perform a query
-        const auto actual = connection.performQuery("insert into test.table1 (id, name, dead) values (4,'apple',0)");
+        const auto actual = connection.performQuery("insert into test.table1 (id, name, dead) values (4, 'apple', 0)");
         const auto tableData = connection.performQuery("select * from test.table1");
 
         //then the query is performed and the data is inserted
         const Result<QueryReturnData> expected = {
             true,
             true,
-            "insert into test.table1 (id, name, dead) values (4, 'apple', 0)",
+            {"insert into test.table1 (id, name, dead) values (4, 'apple', 0)"},
             {}
         };
         const Result<QueryReturnData> expectedData =
 {
             true,
             true,
-            "select * from test.table1",
+            {"select * from test.table1", {}},
             {
                 {{"id","1"},{"name","bagel"}, {"dead","0"}},
                 {{"id","2"},{"name","fork"}, {"dead","1"}},
@@ -120,7 +120,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         {
             true,
             true,
-            "insert into test.table1 (id, name, dead) values ('5', 'cucumber', '1')",
+            {"insert into test.table1 (id, name, dead) values ('5', 'cucumber', '1')"},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -141,7 +141,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         {
             false,
             true,
-            "insert into test.table1 (id, name, dead) values (NULL, NULL, NULL)",
+            {"insert into test.table1 (id, name, dead) values (NULL, NULL, NULL)"},
             {}
         };
         EXPECT_EQ(expected, actual);

@@ -79,7 +79,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected = {
             false,
             false,
-            "create table test(id int primary key);",
+            {"create table test(id int primary key);"},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -99,7 +99,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected = {
             false,
             true,
-            "bad sql",
+            {"bad sql"},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -120,7 +120,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             true,
             true,
-            "select * from test;",
+            {"select * from test;"},
             {
                 {
                     {"id", "3"}
@@ -144,7 +144,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected = {
             true,
             true,
-            "insert into test(id) values (1);",
+            {"insert into test(id) values (1);"},
             {}
         };
         const QueryReturnData expectedData = {
@@ -175,7 +175,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             true,
             true,
-            "insert into test(id) values ('5')",
+            structuredQuery,
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -197,7 +197,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             true,
             true,
-            "insert into test(id) values (NULL)",
+            structuredQuery,
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -219,7 +219,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             true,
             true,
-            "insert into test(id) values ('5')",
+            structuredQuery,
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -240,7 +240,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             false,
             false,
-            "insert into test(id) values (?)",
+            structuredQuery,
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -262,7 +262,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             false,
             true,
-            "bad sql",
+            structuredQuery,
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -284,7 +284,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             true,
             true,
-            "insert into test(id) values ('1');",
+            structuredQuery,
             {}
         };
         const QueryReturnData expectedData =
@@ -316,7 +316,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         {
             true,
             true,
-            "select * from test where id = '3'",
+            structuredQuery,
             {
                 {
                     {"id", "3"}

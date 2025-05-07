@@ -28,7 +28,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetMetaData
         const Result<TableDefinitions> expected = {
             false,
             false,
-            "select concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME,COLUMN_NAME,COLUMN_TYPE from information_schema.COLUMNS where TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');",
+            {"select concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME,COLUMN_NAME,COLUMN_TYPE from information_schema.COLUMNS where TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');"},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -50,7 +50,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetMetaData
             {
                 true,
                 true,
-            "select concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME,COLUMN_NAME,COLUMN_TYPE from information_schema.COLUMNS where TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');",
+            {"select concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME,COLUMN_NAME,COLUMN_TYPE from information_schema.COLUMNS where TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');"},
                 {
                     {"test.table1",{{"id", "int(11)"}, {"name", "varchar(255)"}, {"dead", "tinyint(1)"}}},
                     {"test.table2",{{"id_1", "int(11)"}, {"id_2", "int(11)"}}},

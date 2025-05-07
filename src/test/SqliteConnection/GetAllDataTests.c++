@@ -67,7 +67,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         {
             false,
             false,
-            "",
+            {""},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -88,7 +88,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         {
             true,
             true,
-            "select * from FILEDATA; select * from FILETAG;",
+            {"select * from FILEDATA; select * from FILETAG;"},
             {
                 {"FILEDATA",
                     {

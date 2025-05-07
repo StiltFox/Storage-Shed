@@ -25,7 +25,8 @@ namespace StiltFox::StorageShed
         std::string connectionString;
 
         bool checkIfValidSqlDatabase() const;
-        void forEachTable(const std::function<void(std::string)>&, std::string* = nullptr) const;
+        void forEachTable(const std::function<void(std::string)>&, std::vector<Data::StructuredQuery>& queryTracker)
+                                                                                                                  const;
 
         public:
         SqliteConnection(const std::string& connection);

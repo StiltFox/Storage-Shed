@@ -28,7 +28,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
         {
             false,
             false,
-            "",
+            {""},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -49,7 +49,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
         {
             true,
             true,
-            "select * from test.table1; select * from test.table2; select * from test2.information;",
+            {"select * from test.table1; select * from test.table2; select * from test2.information;"},
             {
                 {"test.table1",
                     {

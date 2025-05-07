@@ -19,7 +19,8 @@ namespace StiltFox::StorageShed::Data
         json output;
         output["success"] = result.success;
         output["connected"] = result.connected;
-        output["performed_query"] = result.performedQuery;
+        output["performed_query"]["query"] = result.performedQuery.query;
+        output["performed_result"]["result"] = result.performedResult.result;
         return output;
     }
 
