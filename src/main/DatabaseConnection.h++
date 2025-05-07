@@ -46,6 +46,14 @@ namespace StiltFox::StorageShed
         };
 
         /***************************************************************************************************************
+         * this function overrides the equals operator for the StructuredQuery object
+         **************************************************************************************************************/
+        inline bool operator==(const StructuredQuery& lhs, const StructuredQuery& rhs)
+        {
+            return lhs.query == rhs.query && lhs.parameters == rhs.parameters;
+        }
+
+        /***************************************************************************************************************
          * In general, throwing exceptions in C++ is a bad idea. Because of this we need a way to communicate to the
          * caller that something went wrong. IO operations are prone to going wrong.
          *
@@ -70,10 +78,10 @@ namespace StiltFox::StorageShed
          * This function overrides the comparison operator for result.
          **************************************************************************************************************/
         template <typename T>
-        bool operator==(Result<T> lhs, Result<T> rhs)
+        bool operator==(const Result<T>& lhs, const Result<T>& rhs)
         {
-            return lhs.success == rhs.success && lhs.connected == rhs.connected && lhs.data == rhs.data &&
-                lhs.performedQuery == rhs.performedQuery;
+            return lhs.errorText == rhs.errorText && lhs.connected == rhs.connected && lhs.data == rhs.data &&
+                lhs.performedQueries == rhs.performedQueries;
         }
     }
 

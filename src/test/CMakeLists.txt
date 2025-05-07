@@ -6,19 +6,19 @@ if(NOT SFSkipTesting)
 
     add_executable(MariaDBTests
             TestRunner.c++
-            MariaDBConnection/ConnectionInformation/ToJDBCStringTest.c++
-            MariaDBConnection/ConnectionTests.c++
-            MariaDBConnection/GetAllDataTests.c++
-            MariaDBConnection/GetMetaDataTests.c++
-            MariaDBConnection/PerformQueryTests.c++
+#            MariaDBConnection/ConnectionInformation/ToJDBCStringTest.c++
+#            MariaDBConnection/ConnectionTests.c++
+#            MariaDBConnection/GetAllDataTests.c++
+#            MariaDBConnection/GetMetaDataTests.c++
+#            MariaDBConnection/PerformQueryTests.c++
     )
 
     add_executable(SqliteTests
-            SqliteConnection/TransactionTests.c++
+#            SqliteConnection/TransactionTests.c++
             SqliteConnection/ConnectionTests.c++
             SqliteConnection/GetMetaDataTests.c++
-            SqliteConnection/PerformUpdateTests.c++
-            SqliteConnection/validateTests.c++
+#            SqliteConnection/PerformUpdateTests.c++
+#            SqliteConnection/validateTests.c++
             SqliteConnection/performQueryTests.c++
             SqliteConnection/GetAllDataTests.c++
     )

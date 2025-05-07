@@ -18,8 +18,18 @@ using namespace StiltFox::StorageShed::Data;
 
 namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
 {
-    string createFileData = "CREATE TABLE IF NOT EXISTS FILEDATA (hashcode VARCHAR(255) NOT NULL,title VARCHAR(255),trash BOOLEAN NOT NULL,CONSTRAINT FILE_DATA_PRIMARY_KEY PRIMARY KEY (hashcode));";
-    string createFileTag = "CREATE TABLE IF NOT EXISTS FILETAG (filetagid VARBINARY NOT NULL,name VARCHAR(255) NOT NULL,categoryid VARBINARY NOT NULL,CONSTRAINT FILE_TAG_PRIMARY_KEY PRIMARY KEY (filetagid),CONSTRAINT FILE_TAG_FK_CATEGORY_ID FOREIGN KEY (categoryid) REFERENCES tagcategory(categoryid) ON DELETE RESTRICT ON UPDATE RESTRICT);";
+    string createFileData = "CREATE TABLE IF NOT EXISTS FILEDATA ("
+                            "hashcode VARCHAR(255) NOT NULL,"
+                            "title VARCHAR(255),"
+                            "trash BOOLEAN NOT NULL,"
+                            "CONSTRAINT FILE_DATA_PRIMARY_KEY PRIMARY KEY (hashcode));";
+    string createFileTag = "CREATE TABLE IF NOT EXISTS FILETAG ("
+                           "filetagid VARBINARY NOT NULL,"
+                           "name VARCHAR(255) NOT NULL,"
+                           "categoryid VARBINARY NOT NULL,"
+                           "CONSTRAINT FILE_TAG_PRIMARY_KEY PRIMARY KEY (filetagid),"
+                           "CONSTRAINT FILE_TAG_FK_CATEGORY_ID FOREIGN KEY (categoryid) REFERENCES "
+                           "tagcategory(categoryid) ON DELETE RESTRICT ON UPDATE RESTRICT);";
     string insertFileA = "INSERT INTO FILEDATA (hashcode, title, trash) values ('abc','scp-009',false);";
     string insertFileB = "INSERT INTO FILEDATA (hashcode, title, trash) values ('asd','scp-000',true);";
 
@@ -66,8 +76,8 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         const Result<MultiTableData> expected =
         {
             false,
-            false,
-            {""},
+            "",
+            {},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -87,8 +97,12 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         const Result<MultiTableData> expected =
         {
             true,
-            true,
-            {"select * from FILEDATA; select * from FILETAG;"},
+            "",
+            {
+                {"select tbl_name from sqlite_schema where type = 'table';"},
+                {"select * from FILEDATA;"},
+                {"select * from FILETAG;"}
+            },
             {
                 {"FILEDATA",
                     {

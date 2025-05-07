@@ -234,6 +234,10 @@ Result<QueryReturnData> SqliteConnection::performQuery(StructuredQuery structure
 
             if (sqlite3_finalize(statement) != SQLITE_OK) output.errorText = sqlite3_errmsg(dbConnection);
         }
+        else
+        {
+            output.errorText = sqlite3_errmsg(dbConnection);
+        }
     }
 
     return output;

@@ -17,10 +17,18 @@ namespace StiltFox::StorageShed::Data
     json resultToJsonGeneric(const Result<T>& result)
     {
         json output;
-        output["success"] = result.success;
+        output["errorText"] = result.errorText;
         output["connected"] = result.connected;
-        output["performed_query"]["query"] = result.performedQuery.query;
-        output["performed_result"]["result"] = result.performedResult.result;
+
+        for (const auto& query : result.performedQueries)
+        {
+            json queryJson;
+            queryJson["query"] = query.query;
+            queryJson["data"] = query.parameters;
+
+            output["performedQueries"].emplace_back(queryJson);
+        }
+
         return output;
     }
 
