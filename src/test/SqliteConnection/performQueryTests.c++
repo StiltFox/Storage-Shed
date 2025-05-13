@@ -66,7 +66,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         return returnData;
     }
 
-    TEST(performQuery, will_return_connected_false_and_success_false_if_the_database_is_not_connected)
+    TEST(performQuery, will_return_connected_false_if_the_database_is_not_connected)
     {
         //given we have a database that we don't connect to
         const TemporaryFile database = ".sfdb_e5192e7333344a69855aa4ca7fb59b8a";
@@ -75,7 +75,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         //when we try to perform a query
         const auto actual = connection.performQuery("create table test(id int primary key);");
 
-        //then we get back a connected value of false and success false
+        //then we get back a connected value of false
         const Result<QueryReturnData> expected = {
             false,
             "",
@@ -85,7 +85,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(performQuery, will_return_connected_true_and_success_false_if_the_sql_cannot_be_executed)
+    TEST(performQuery, will_return_connected_true_and_an_error_if_the_sql_cannot_be_executed)
     {
         //given we have a database that we connect to
         const TemporaryFile database = ".sfdb_efeb47c5b9104479ae9c979bb3be322f";
@@ -95,7 +95,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         //when we try to perform a bad query
         const auto actual = connection.performQuery("bad sql");
 
-        //then we get back a connected value of true and a success of false
+        //then we get back a connected value of true and an error
         const Result<QueryReturnData> expected = {
             true,
             "near \"bad\": syntax error",
@@ -115,7 +115,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         //when we perform a query that should return data
         const auto actual = connection.performQuery("select * from test;");
 
-        //then we get back a successful query with the appropriate data
+        //then we get back the appropriate data
         const Result<QueryReturnData> expected =
         {
             true,
@@ -225,7 +225,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(performQuery, will_return_connected_false_and_success_false_if_the_database_is_not_connected_and_a_StructuredQuery_is_passed_in)
+    TEST(performQuery, will_return_connected_false_if_the_database_is_not_connected_and_a_StructuredQuery_is_passed_in)
     {
         //given we have a disconnected database and a structured query
         const TemporaryFile database = ".sfdb_61078cfab7804a2c859d04d1428f1930";
@@ -235,7 +235,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         //when we perform the query
         const auto actual = connection.performQuery(structuredQuery);
 
-        //then we get back a success and connected value of false
+        //then we get back a connected value of false
         const Result<QueryReturnData> expected =
         {
             false,
@@ -246,83 +246,83 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         EXPECT_EQ(expected, actual);
     }
 
-    // TEST(performQuery, will_return_connected_true_and_success_false_when_a_bad_sql_statement_is_passed_via_StructruedQuery)
-    // {
-    //     //given we have a connected database and the sql is bad
-    //     const TemporaryFile database = ".sfdb_32b0ae5d48474da19de5f263b2b58c01";
-    //     const StructuredQuery structuredQuery = {"bad sql", {"5"}};
-    //     SqliteConnection connection = setupDatabase(database.getPath());
-    //     connection.connect();
-    //
-    //     //when we perform the query
-    //     const auto actual = connection.performQuery(structuredQuery);
-    //
-    //     //then we get back a connected of true and a success of false
-    //     const Result<QueryReturnData> expected =
-    //     {
-    //         false,
-    //         true,
-    //         structuredQuery,
-    //         {}
-    //     };
-    //     EXPECT_EQ(expected, actual);
-    // }
-    //
-    // TEST(performQuery, will_perform_the_passed_in_StructuredQuery)
-    // {
-    //     //given we have a database and connect to it
-    //     const TemporaryFile database = ".sfdb_2708c8f7ad614ccc8513eca4f7721101";
-    //     const StructuredQuery structuredQuery = {"insert into test(id) values (?);", {"1"}};
-    //     SqliteConnection connection = setupDatabase(database.getPath());
-    //     connection.connect();
-    //
-    //     //when we perform a query
-    //     const auto actual = connection.performQuery(structuredQuery);
-    //
-    //     //then the update is performed and the data is saved
-    //     const Result<QueryReturnData> expected =
-    //     {
-    //         true,
-    //         true,
-    //         structuredQuery,
-    //         {}
-    //     };
-    //     const QueryReturnData expectedData =
-    //     {
-    //         {
-    //             {"id", "3"}
-    //         },
-    //         {
-    //                 {"id", "1"}
-    //         }
-    //     };
-    //     EXPECT_EQ(expected, actual);
-    //     EXPECT_EQ(expectedData, testProcedure(database.getPath()));
-    // }
-    //
-    // TEST(performQuery, will_return_any_data_that_the_StructuredQuery_does)
-    // {
-    //     //given we have a database and connect to it
-    //     const TemporaryFile database = ".sfdb_7becc00d02ba4657843ede23c28384fb";
-    //     const StructuredQuery structuredQuery = {"select * from test where id = ?", {"3"}};
-    //     SqliteConnection connection = setupDatabase(database.getPath());
-    //     connection.connect();
-    //
-    //     //when we perform the update
-    //     const auto actual = connection.performQuery(structuredQuery);
-    //
-    //     //then the update is performed but no data is returned
-    //     const Result<QueryReturnData> expected =
-    //     {
-    //         true,
-    //         true,
-    //         structuredQuery,
-    //         {
-    //             {
-    //                 {"id", "3"}
-    //             }
-    //         }
-    //     };
-    //     EXPECT_EQ(expected, actual);
-    // }
+    TEST(performQuery, will_return_connected_true_and_an_error_when_a_bad_sql_statement_is_passed_via_StructruedQuery)
+    {
+        //given we have a connected database and the sql is bad
+        const TemporaryFile database = ".sfdb_32b0ae5d48474da19de5f263b2b58c01";
+        const StructuredQuery structuredQuery = {"bad sql", {"5"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform the query
+        const auto actual = connection.performQuery(structuredQuery);
+
+        //then we get back a connected of true and an error
+        const Result<QueryReturnData> expected =
+        {
+            true,
+            "near \"bad\": syntax error",
+            {structuredQuery},
+            {}
+        };
+        EXPECT_EQ(expected, actual);
+    }
+
+    TEST(performQuery, will_perform_the_passed_in_StructuredQuery)
+    {
+        //given we have a database and connect to it
+        const TemporaryFile database = ".sfdb_2708c8f7ad614ccc8513eca4f7721101";
+        const StructuredQuery structuredQuery = {"insert into test(id) values (?);", {"1"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform a query
+        const auto actual = connection.performQuery(structuredQuery);
+
+        //then the update is performed and the data is saved
+        const Result<QueryReturnData> expected =
+        {
+            true,
+            "",
+            {structuredQuery},
+            {}
+        };
+        const QueryReturnData expectedData =
+        {
+            {
+                {"id", "3"}
+            },
+            {
+                    {"id", "1"}
+            }
+        };
+        EXPECT_EQ(expected, actual);
+        EXPECT_EQ(expectedData, testProcedure(database.getPath()));
+    }
+
+    TEST(performQuery, will_return_any_data_that_the_StructuredQuery_does)
+    {
+        //given we have a database and connect to it
+        const TemporaryFile database = ".sfdb_7becc00d02ba4657843ede23c28384fb";
+        const StructuredQuery structuredQuery = {"select * from test where id = ?", {"3"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform the update
+        const auto actual = connection.performQuery(structuredQuery);
+
+        //then the update is performed but no data is returned
+        const Result<QueryReturnData> expected =
+        {
+            true,
+            "",
+            {structuredQuery},
+            {
+                {
+                    {"id", "3"}
+                }
+            }
+        };
+        EXPECT_EQ(expected, actual);
+    }
 }

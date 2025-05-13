@@ -63,7 +63,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         return databasePath.getPath();
     }
 
-    TEST(getAllData, will_return_success_false_and_connected_false_if_the_datbase_is_not_connected)
+    TEST(getAllData, will_return_connected_false_if_the_datbase_is_not_connected)
     {
         //given we have a database that we do not connect to
         const TemporaryFile database = ".sfdb_f3da8544995d4dbe8823e905c7707403";
@@ -72,7 +72,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         //when we try to get all data from the database
         const auto actual = connection.getAllData();
 
-        //then we get back that we are not connected to the database and that hte operation was not a success
+        //then we get back that we are not connected to the database
         const Result<MultiTableData> expected =
         {
             false,

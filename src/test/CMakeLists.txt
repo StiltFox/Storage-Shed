@@ -14,11 +14,11 @@ if(NOT SFSkipTesting)
     )
 
     add_executable(SqliteTests
-#            SqliteConnection/TransactionTests.c++
+            SqliteConnection/TransactionTests.c++
             SqliteConnection/ConnectionTests.c++
             SqliteConnection/GetMetaDataTests.c++
-#            SqliteConnection/PerformUpdateTests.c++
-#            SqliteConnection/validateTests.c++
+            SqliteConnection/PerformUpdateTests.c++
+            SqliteConnection/validateTests.c++
             SqliteConnection/performQueryTests.c++
             SqliteConnection/GetAllDataTests.c++
     )

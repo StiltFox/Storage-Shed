@@ -66,7 +66,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         return returnData;
     }
 
-    TEST(performUpdate, will_return_connected_false_and_success_false_if_the_database_is_not_connected)
+    TEST(performUpdate, will_return_connected_false_if_the_database_is_not_connected)
     {
         //given we have a database that we don't connect to
         const TemporaryFile database = ".sfdb_a0ffc6bfd57942588a549142668b36d8";
@@ -75,17 +75,17 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //when we try to perform an update
         const auto actual = connection.performUpdate("create table test(id int primary key);");
 
-        //then we get back a connected value of false and success false
+        //then we get back a connected value of false
         const Result<void*> expected = {
             false,
-            false,
-            {"create table test(id int primary key);"},
+            "",
+            {{"create table test(id int primary key);", {}}},
             nullptr
         };
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(performUpdate, will_return_connected_true_and_success_false_if_the_sql_cannot_be_executed)
+    TEST(performUpdate, will_return_connected_true_and_an_error_if_the_sql_cannot_be_executed)
     {
         //given we have a database that we connect to
         const TemporaryFile database = ".sfdb_e4d5962190dc4038a5e5ea6a4e3ddb9d";
@@ -95,11 +95,11 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //when we try to perform a bad query
         const auto actual = connection.performUpdate("bad sql");
 
-        //then we get back a connected value of true and a success of false
+        //then we get back a connected value of true and an error
         const Result<void*> expected = {
-            false,
             true,
-            {"bad sql"},
+            "near \"bad\": syntax error",
+            {{"bad sql",{}}},
             nullptr
         };
         EXPECT_EQ(expected, actual);
@@ -115,12 +115,12 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //when we perform an update that should return data
         const auto actual = connection.performUpdate("select * from test;");
 
-        //then we get back a successful query with no data
+        //then we get back query with no data
         const Result<void*> expected =
         {
             true,
-            true,
-            {"select * from test;"},
+            "",
+            {{"select * from test;",{}}},
             nullptr
         };
         EXPECT_EQ(expected, actual);
@@ -139,8 +139,8 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //then the update is performed and the data is saved
         const Result<void*> expected = {
             true,
-            true,
-            {"insert into test(id) values (1);"},
+            "",
+            {{"insert into test(id) values (1);",{}}},
             nullptr
         };
         const QueryReturnData expectedData = {
@@ -170,8 +170,8 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
-            true,
-            structuredQuery,
+            "",
+            {structuredQuery},
             nullptr
         };
         EXPECT_EQ(expected, actual);
@@ -191,9 +191,9 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //then we get back that the value is null
         const Result<void*> expected =
         {
-            false,
             true,
-            structuredQuery,
+            "NOT NULL constraint failed: test.id",
+            {structuredQuery},
             nullptr
         };
         EXPECT_EQ(expected, actual);
@@ -201,7 +201,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
 
     TEST(performUpdate, will_ignore_extra_parameters_in_StructuredQuery)
     {
-        //given we have a database and a structured query with too many parrameters
+        //given we have a database and a structured query with too many parameters
         const TemporaryFile database = ".sfdb_1103ad444f9d4b01832f6819c2fa14b7";
         const StructuredQuery structuredQuery = {"insert into test(id) values (?)", {"5", "10"}};
         SqliteConnection connection = setupDatabase(database.getPath());
@@ -214,14 +214,14 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
-            true,
-            structuredQuery,
+            "",
+            {structuredQuery},
             nullptr
         };
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(performUpdate, will_return_connected_false_and_success_false_if_the_database_is_not_connected_and_a_StructuredQuery_is_passed_in)
+    TEST(performUpdate, will_return_connected_false_if_the_database_is_not_connected_and_a_StructuredQuery_is_passed_in)
     {
         //given we have a disconnected database and a structured query
         const TemporaryFile database = ".sfdb_81e8653c16b24d1b91392883a9430ba3";
@@ -231,18 +231,18 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //when we perform the update
         const auto actual = connection.performUpdate(structuredQuery);
 
-        //then we get back a success and connected value of false
+        //then we get back a connected value of false
         const Result<void*> expected =
         {
             false,
-            false,
-            structuredQuery,
+            "",
+            {structuredQuery},
             nullptr
         };
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(performUpdate, will_return_connected_true_and_success_false_when_a_bad_sql_statement_is_passed_via_StructruedQuery)
+    TEST(performUpdate, will_return_connected_true_an_error_when_a_bad_sql_statement_is_passed_via_StructruedQuery)
     {
         //given we have a connected database and the sql is bad
         const TemporaryFile database = ".sfdb_a3eb75d8fa374cdba3fe060dd485b026";
@@ -253,12 +253,12 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //when we perform the update
         const auto actual = connection.performUpdate(structuredQuery);
 
-        //then we get back a connected of true and a success of false
+        //then we get back a connected value of true and an error
         const Result<void*> expected =
         {
-            false,
             true,
-            structuredQuery,
+            "near \"bad\": syntax error",
+            {structuredQuery},
             nullptr
         };
         EXPECT_EQ(expected, actual);
@@ -279,8 +279,8 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
-            true,
-            structuredQuery,
+            "",
+            {structuredQuery},
             nullptr
         };
         const QueryReturnData expectedData =
@@ -311,8 +311,8 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
-            true,
-            structuredQuery,
+            "",
+            {structuredQuery},
             nullptr
         };
         EXPECT_EQ(expected, actual);

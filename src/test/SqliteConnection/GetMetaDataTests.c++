@@ -90,7 +90,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
         EXPECT_EQ(actual, expected);
     }
 
-    TEST(getMetaData, will_return_success_false_and_connected_false_if_the_database_is_not_connected)
+    TEST(getMetaData, will_return_connected_false_if_the_database_is_not_connected)
     {
         //given we have a database that we do not connect to
         const TemporaryFile database = ".sfdb_c54c5dcd21fb4da69745d841e809945d";
@@ -99,7 +99,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
         //when we get the metadata for the database
         const auto actual = connection.getMetaData();
 
-        //then we get back that we are not connected and the operation was not a success
+        //then we get back that we are not connected
         const Result<TableDefinitions> expected = {
             false,
             "",

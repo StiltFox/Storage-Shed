@@ -31,8 +31,11 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         Data::Result<Data::TableDefinitions> expected =
             {
             true,
-            true,
-            {"select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('test');"},
+            "",
+            {
+                {"select tbl_name from sqlite_schema where type = 'table';"},
+                {"select * from pragma_table_info(?);", {"test"}}
+            },
             {
                     {"test", {{"id", "INT"}}}
                 }
@@ -57,8 +60,11 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         Data::Result<Data::TableDefinitions> expected =
             {
             true,
-            true,
-            {"select tbl_name from sqlite_schema where type = 'table'; select * from pragma_table_info('pickle');"},
+            "",
+            {
+                {"select tbl_name from sqlite_schema where type = 'table';"},
+                {"select * from pragma_table_info(?);", {"pickle"}}
+            },
             {
                         {"pickle", {{"id", "INT"}}}
             }
@@ -67,7 +73,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(transaction, starting_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
+    TEST(transaction, starting_a_transaction_while_not_connected_to_the_database_will_return_a_connected_of_false)
     {
         //given we have a database and we are not connected
         TemporaryFile databaseFile = ".sfdb_251e7bcab2564f07b6e7a29104538d9b";
@@ -76,26 +82,26 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         //when we start a transaction
         auto actual = connection.startTransaction();
 
-        //then we get back a success and connected value of false
-        Data::Result<void*> expected = {false, false, {"start transaction;"}, nullptr};
+        //then we get back a connected value of false
+        Data::Result<void*> expected = {false, "", {{"start transaction;"}}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(transaction, rolling_back_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
+    TEST(transaction, rolling_back_a_transaction_while_not_connected_to_the_database_will_return_a_connected_of_false)
     {
         //given we have a database and we are not connected
         TemporaryFile databaseFile = ".sfdb_2ddf01329da542e5bfed38681bb192c1";
         SqliteConnection connection = databaseFile.getPath();
 
-        //when we rollback a transaction
+        //when we roll back a transaction
         auto actual = connection.rollbackTransaction();
 
-        //then we get back a success and connected value of false
-        Data::Result<void*> expected = {false, false, {"rollback transaction;"}, nullptr};
+        //then we get back a connected value of false
+        Data::Result<void*> expected = {false, "", {{"rollback transaction;"}}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(transaction, committing_a_transaction_while_not_connected_to_the_database_will_return_a_success_of_false_and_a_connected_of_false)
+    TEST(transaction, committing_a_transaction_while_not_connected_to_the_database_will_return_a_connected_of_false)
     {
         //given we have a database and we are not connected
         TemporaryFile databaseFile = ".sfdb_e0c88b738cb74c0fa3142e6dbe9e96f8";
@@ -104,12 +110,12 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         //when we commit a transaction
         auto actual = connection.commitTransaction();
 
-        //then we get back a success and connected value of false
-        Data::Result<void*> expected = {false, false, {"commit transaction;"}, nullptr};
+        //then we get back a connected value of false
+        Data::Result<void*> expected = {false, "", {{"commit transaction;"}}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(transaction, committing_a_transaction_while_a_transaction_is_not_in_place_will_return_success_of_false)
+    TEST(transaction, committing_a_transaction_while_a_transaction_is_not_in_place_will_return_an_error)
     {
         //given we have a database and we are connected
         TemporaryFile databaseFile = ".sfdb_36c76c223536484d95ad556e3f98309d";
@@ -119,12 +125,12 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         //when we commit a transaction
         auto actual = connection.commitTransaction();
 
-        //then we get back a connected value of true and a success of false
-        Data::Result<void*> expected = {false, true, {"commit transaction;"}, nullptr};
+        //then we get back a connected value of true and an error
+        Data::Result<void*> expected = {true, "cannot commit - no transaction is active", {{"commit transaction;"}}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
-    TEST(transaction, rolling_back_a_transaction_while_a_transaction_is_not_in_place_will_return_success_of_false)
+    TEST(transaction, rolling_back_a_transaction_while_a_transaction_is_not_in_place_will_return_an_error)
     {
         //given we have a database and we are connected
         TemporaryFile databaseFile = ".sfdb_8942569fcb044098b46de70e7d004152";
@@ -134,8 +140,8 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         //when we roll back a transaction
         auto actual = connection.rollbackTransaction();
 
-        //then we get back a connected value of true and a success of false
-        Data::Result<void*> expected = {false, true, {"rollback transaction;"}, nullptr};
+        //then we get back a connected value of true and an error
+        Data::Result<void*> expected = {true, "cannot rollback - no transaction is active", {{"rollback transaction;"}}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 }

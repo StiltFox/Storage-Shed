@@ -312,7 +312,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         EXPECT_EQ(expected, nonStrict);
     }
 
-    TEST(validate, will_return_a_connected_status_of_false_and_success_of_false_if_the_database_is_disconnected)
+    TEST(validate, will_return_an_error_if_the_database_is_disconnected)
     {
         //given we have a database that is not connected
         const TemporaryFile database = ".sfdb_4f92050777cd4f13acde2c3f2e1007eb";
@@ -322,7 +322,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Validate
         const auto actual = connection.validate({}, true);
 
         //then we get back that the database is not connected
-        const unordered_set<string> expected = {"Failed to Load Metadata .sfdb_4f92050777cd4f13acde2c3f2e1007eb", "Database not connected .sfdb_4f92050777cd4f13acde2c3f2e1007eb"};
+        const unordered_set<string> expected = {"Database not connected .sfdb_4f92050777cd4f13acde2c3f2e1007eb"};
         EXPECT_EQ(expected, actual);
     }
 }
