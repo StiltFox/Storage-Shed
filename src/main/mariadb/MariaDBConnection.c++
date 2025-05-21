@@ -54,7 +54,7 @@ namespace StiltFox::StorageShed
 
     Result<void*> MariaDBConnection::startTransaction()
     {
-        Result<void*> output = {false, false, "start transaction", nullptr};
+        Result<void*> output = {false, "", {{"start transaction"}}, nullptr};
 
         if (isConnected())
         {
@@ -62,11 +62,10 @@ namespace StiltFox::StorageShed
             try
             {
                 if (connection->getAutoCommit()) connection->setAutoCommit(false);
-                output.success = true;
             }
-            catch (...)
+            catch (SQLException& e)
             {
-                //do nothing. success is already false.
+                output.errorText = e.what();
             }
         }
 
@@ -75,7 +74,7 @@ namespace StiltFox::StorageShed
 
     Result<void*> MariaDBConnection::rollbackTransaction()
     {
-        Result<void*> output = {false, false, "rollback", nullptr};
+        Result<void*> output = {false, "", {{"rollback"}}, nullptr};
 
         if (isConnected())
         {
@@ -86,12 +85,11 @@ namespace StiltFox::StorageShed
                 {
                     connection->rollback();
                     connection->setAutoCommit(true);
-                    output.success = true;
                 }
             }
-            catch (...)
+            catch (SQLException& e)
             {
-                //do nothing, success is already false
+                output.errorText = e.what();
             }
         }
 
@@ -100,7 +98,7 @@ namespace StiltFox::StorageShed
 
     Result<void*> MariaDBConnection::commitTransaction()
     {
-        Result<void*> output = {false, false, "commit", nullptr};
+        Result<void*> output = {false, "", {{"commit"}}, nullptr};
 
         if (isConnected())
         {
@@ -111,12 +109,11 @@ namespace StiltFox::StorageShed
                 {
                     connection->commit();
                     connection->setAutoCommit(true);
-                    output.success = true;
                 }
             }
-            catch (...)
+            catch (SQLException& e)
             {
-                //do nothing, success is already false
+                output.errorText = e.what();
             }
         }
 
@@ -131,7 +128,7 @@ namespace StiltFox::StorageShed
     Result<void*> MariaDBConnection::performUpdate(const StructuredQuery& statement)
     {
         const auto output = performQuery(statement);
-        return {output.success, output.connected, output.performedQuery, nullptr};
+        return {output.connected, output.errorText, output.performedQueries, nullptr};
     }
 
     unordered_set<string> MariaDBConnection::validate(TableDefinitions tableDefinitions, bool strict)
@@ -150,13 +147,13 @@ namespace StiltFox::StorageShed
                 " information_schema.COLUMNS"
             " where"
                 " TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema');";
-        TableDefinitions definitions = TableDefinitions{};
+        TableDefinitions definitions = {};
         auto rawData = performQuery(query);
 
         for (const auto& row : rawData.data)
             definitions[row.at("TABLE_NAME")][row.at("COLUMN_NAME")] = row.at("COLUMN_TYPE");
 
-        return {rawData.success, rawData.connected, rawData.performedQuery, definitions};
+        return {rawData.connected, rawData.errorText, rawData.performedQueries, definitions};
     }
 
     Result<QueryReturnData> MariaDBConnection::performQuery(string query)
@@ -166,34 +163,45 @@ namespace StiltFox::StorageShed
 
     Result<QueryReturnData> MariaDBConnection::performQuery(StructuredQuery query)
     {
-        Result<QueryReturnData> output = {false, false, query.query, {}};
+        Result<QueryReturnData> output = {false, "", {query}, {}};
 
         if (isConnected())
         {
             output.connected = true;
             try
             {
-                unique_ptr<PreparedStatement> statement(connection->prepareStatement(query.query));
-                for (int x=0; x<query.parameters.size(); x++) statement->setString(x+1, query.parameters[x]);
-                unique_ptr<ResultSet> results(statement->executeQuery());
+                const unique_ptr<PreparedStatement> statement(connection->prepareStatement(query.query));
+                int numParameters = statement->getParameterMetaData()->getParameterCount();
 
-                while (results->next())
+                for (int x=0; x<numParameters; x++)
                 {
-                    int columns = results->getMetaData()->getColumnCount();
-                    output.data.emplace_back();
-                    for (int z=0; z<columns; z++)
+                    if (x<query.parameters.size())
                     {
-                        string columnValue = results->getString(z+1).c_str();
-                        output.data[output.data.size() - 1][results->getMetaData()->getColumnName(z+1).c_str()] = columnValue;
+                        statement->setString(x+1, query.parameters[x]);
+                    }
+                    else
+                    {
+                        statement->setNull(x+1, _NULL);
                     }
                 }
 
-                output.success = true;
+                const unique_ptr<ResultSet> results(statement->executeQuery());
+
+                while (results->next())
+                {
+                    const int columns = results->getMetaData()->getColumnCount();
+                    output.data.emplace_back();
+                    for (int z=0; z<columns; z++)
+                    {
+                        const string columnValue = results->getString(z+1).c_str();
+                        output.data[output.data.size() - 1][results->getMetaData()->getColumnName(z+1).c_str()] =
+                            columnValue;
+                    }
+                }
             }
-            catch (SQLException e)
+            catch (SQLException& e)
             {
-                //print out error for testing purposes
-                cerr << e.what() << endl;
+                output.errorText = e.what();
             }
         }
 
@@ -204,25 +212,22 @@ namespace StiltFox::StorageShed
     {
         const string tableQuery = "select concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME "
                                   "from information_schema.TABLES "
-                                  "where TABLE_SCHEMA not in ('information_schema', 'mysql', 'performance_schema', 'sys');";
-        Result<MultiTableData> output = {false, false, "", {}};
+                                  "where TABLE_SCHEMA not in "
+                                  "('information_schema', 'mysql', 'performance_schema', 'sys');";
+        Result<MultiTableData> output = {false, "", {}, {}};
 
         auto tables = performQuery(tableQuery);
         output.connected = tables.connected;
-        if (tables.success)
+        if (tables.errorText.empty())
         {
-            output.success = true; //prime sucess to be used with and logic
-
             for (const auto& row : tables.data)
             {
                 string selectQuery = "select * from " + row.at("TABLE_NAME") + ";";
                 auto tableData = performQuery(selectQuery);
 
                 output.data[row.at("TABLE_NAME")] = tableData.data;
-                output.success &= tableData.success;
-                if (!output.performedQuery.empty()) output.performedQuery += " ";
-                output.performedQuery += selectQuery;
-                if (!output.success) break;
+                output.performedQueries.emplace_back(selectQuery);
+                if (!output.errorText.empty()) break;
             }
         }
 

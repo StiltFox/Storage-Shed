@@ -27,9 +27,9 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         connection.performUpdate("create table test (id int primary key);");
         connection.commitTransaction();
 
-        //then the data wil lbe saved.
+        //then the data will be saved.
         Data::Result<Data::TableDefinitions> expected =
-            {
+        {
             true,
             "",
             {
@@ -39,7 +39,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
             {
                     {"test", {{"id", "INT"}}}
                 }
-            };
+        };
         EXPECT_EQ(expected, connection.getMetaData());
     }
 

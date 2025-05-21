@@ -5,12 +5,13 @@ if(NOT SFSkipTesting)
     add_subdirectory(print_helper)
 
     add_executable(MariaDBTests
-            TestRunner.c++
-#            MariaDBConnection/ConnectionInformation/ToJDBCStringTest.c++
-#            MariaDBConnection/ConnectionTests.c++
-#            MariaDBConnection/GetAllDataTests.c++
-#            MariaDBConnection/GetMetaDataTests.c++
-#            MariaDBConnection/PerformQueryTests.c++
+            MariaDBConnection/TestRunner.c++
+            MariaDBConnection/ConnectionInformation/ToJDBCStringTest.c++
+            MariaDBConnection/ConnectionTests.c++
+            MariaDBConnection/GetAllDataTests.c++
+            MariaDBConnection/GetMetaDataTests.c++
+            MariaDBConnection/PerformQueryTests.c++
+            MariaDBConnection/TransactionTests.c++
     )
 
     add_executable(SqliteTests

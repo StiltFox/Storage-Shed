@@ -15,7 +15,7 @@ using namespace StiltFox::StorageShed::Data;
 
 namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
 {
-    TEST(getAllData, will_return_success_of_false_and_connected_of_false_if_the_database_is_not_connected)
+    TEST(getAllData, will_return_connected_of_false_if_the_database_is_not_connected)
     {
         //given we have a database that we do not connect to
         MariaDBConnection connection = getConnectionInformationFromEnvironment();
@@ -23,12 +23,12 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
         //when we try to get all the data
         const auto actual = connection.getAllData();
 
-        //then we get back that we are not connected and the operation was not a success
+        //then we get back that we are not connected
         const Result<MultiTableData> expected =
         {
             false,
-            false,
-            {""},
+            "",
+            {},
             {}
         };
         EXPECT_EQ(expected, actual);
@@ -48,8 +48,12 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
         const Result<MultiTableData> expected =
         {
             true,
-            true,
-            {"select * from test.table1; select * from test.table2; select * from test2.information;"},
+            "",
+            {
+                {"select * from test.table1;"},
+                {"select * from test.table2;"},
+                {"select * from test2.information;"}
+            },
             {
                 {"test.table1",
                     {
