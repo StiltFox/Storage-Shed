@@ -15,6 +15,15 @@ Stilt Fox&reg; is trademarked. You may not use the Stilt Fox™ name, however th
 You may contribute to this library, however all contributions will share the same license as this library, and you agree
 that Stilt Fox&reg; owns the copyright for any contributions.
 
+## Important!
+These instructions assume you are using a Linux based operating system to compile the code. No testing or compiling
+has been performed on Windows by Stilt Fox&reg;. If you choose to use Windows as your main development platform you are
+on your own. If you have a strong desire to use Stilt Fox&reg; libraries and products, switching to Linux is highly
+recommended.
+
+With The death of Windows 10 (as of the time of writing this) directly around the corner, the roadmap to support Windows
+systems has been completely canceled.
+
 ## Prerequisites
 ### Main Program
 These libraries are required for the core functionality of this project.
@@ -103,6 +112,8 @@ we will have to compile the GTest library from scratch.
  ```
 
  #### Compiling and Installing Stilt Fox&reg; Storage Shed for Windows
+**WARNING:** Compiling for windows is legacy support. These instructions are no longer checked and may or may not work.
+
 ```bash
 mkdir build
 cd build
