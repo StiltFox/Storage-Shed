@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5.0)
-project(Storage-Shed VERSION 1.2.1)
+project(Storage-Shed VERSION 2.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -9,6 +9,10 @@ include(CMakePackageConfigHelpers)
 
 find_package(Scribe REQUIRED)
 find_package(SQLite3 REQUIRED)
+
+include_directories("/usr/include/mariadb") #path to include folder
+add_library(mariadbcpp STATIC IMPORTED)
+set_property(TARGET mariadbcpp PROPERTY IMPORTED_LOCATION "/usr/lib/libmariadbcpp.so")
 
 add_subdirectory(src)
 
