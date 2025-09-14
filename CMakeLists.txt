@@ -24,7 +24,7 @@ install(FILES
 )
 
 install(
-    TARGETS SqliteConnection
+    TARGETS SqliteConnection MariaDBConnection
     EXPORT StorageShed
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/StorageShed
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/Stilt_Fox/StorageShed
