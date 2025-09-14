@@ -78,63 +78,6 @@ sudo cmake --install .
 cd ..
 ```
 
-## Cross Compiling For Windows
-Because this project was made primarily for Linux based systems, getting the libraries running on windows can be tricky.
-Several configurations need to be made that Linux simply does not need.
-
-### Prerequisites
-- CMake
-  - version 3.5.0 or greater
-- C++ compiler
-  - must support C++ version 20 or higher
-  - must be mingw using a posix threading system
-    - example: `x86_64-w64-mingw32-g++-posix`
-
-### Setup
-#### Compiler and Toolchain
-The first order of business should be getting your compiler and toolchain up and running. To make this happen you first 
-need to install the mingw compiler onto your computer and ninja build.\
-`sudo apt install g++-mingw-w64 gcc-mingw-w64 ninja-build` 
-
-#### Installing GTest for Windows
-Because we are running on Linux, by default only the Linux binaries for the GTest library are available on the repo and 
-we will have to compile the GTest library from scratch.
-1. clone GTest from the github repo [here](https://github.com/google/googletest)
-2. copy the toolchain file from [toolchains/windows.toolchain](toolchains) into the GTest directory.
-3. do the following CMake commands:
-``` bash
- mkdir build
- cd build
- rm -rf * #careful this is dangerous!
- cmake -DCMAKE_TOOLCHAIN_FILE=windows.toolchain -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32/ ..
- cmake --build .
- cmake --install .
- ```
-
- #### Compiling and Installing Stilt Fox&reg; Storage Shed for Windows
-**WARNING:** Compiling for windows is legacy support. These instructions are no longer checked and may or may not work.
-
-```bash
-mkdir build
-cd build
-rm -rf * # DANGER be sure you are in the build directory
-# Here we will compile the whole project tests and all.
-# If you just wish to install the library without running the tests
-# you can specify the -DSFSkipTesting=true option. Just like
-# in the Linux build.
-cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/windows.toolchain -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32/ -DCMAKE_BUILD_TYPE=Release -G Ninja ..
-cmake --build .
-cmake --install .
-```
-
-#### Running the Windows Tests
-Because these directions produce a windows executable, Linux cannot execute the compiled tests directly. Instead they 
-need to be run using wine. Wine can be activated from the command line using something like:\
-`wine <path to program>`\
-for an example please checkout the [helper scripts](helper_scripts).\
-to install wine on your system do the following:\
-`sudo apt install wine`
-
 ## Linking to Stilt Fox&reg; Storage Shed
 Linking to Stilt Fox&reg; Storage Shed is easy. In your CMakeLists.txt file include the following line:\
 `find_package(StorageShed)`\

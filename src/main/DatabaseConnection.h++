@@ -211,6 +211,21 @@ namespace StiltFox::StorageShed
          * @return the connection string for the database.
          **************************************************************************************************************/
         virtual std::string getConnectionString() = 0;
+        /***************************************************************************************************************
+         * Sql is not a standardized language and has many issues with compatability between different database
+         * providers. This can cause problems when performing actions or building tables within specific providers.
+         * SQLite is in particular lacking a lot of features other database engines would have.
+         *
+         * To combat this, this function will return a string value that represents what kind of SQL source this
+         * connection is. You can change your queries accordingly. Often times you will not need to check this unless
+         * you're adding SQLite support.
+         *
+         * This is also used because checking the connection string may not make this obvious.
+         *
+         * @return a string value indicating what kind of connection this is. IE: sqlite, or mysql. To facilitate easy
+         *         checking, the string will always be lower case.
+         **************************************************************************************************************/
+        virtual std::string getSqlType();
     };
 }
 

@@ -48,6 +48,7 @@ namespace StiltFox::StorageShed
         Data::Result<Data::MultiTableData> getAllData() override;
         bool isConnected() override;
         std::string getConnectionString() override;
+        std::string getSqlType() override;
         // end override section
 
         /***************************************************************************************************************

@@ -48,6 +48,7 @@ namespace StiltFox::StorageShed
         Data::Result<Data::MultiTableData> getAllData() override;
         bool isConnected() override;
         std::string getConnectionString() override;
+        std::string getSqlType() override;
 
         MariaDBConnection& operator=(const ConnectionInformation& connectionInformation);
         ~MariaDBConnection();

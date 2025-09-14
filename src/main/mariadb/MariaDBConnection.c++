@@ -282,4 +282,9 @@ namespace StiltFox::StorageShed
     {
         return "jdbc:mariadb://" + hostName + ":" + to_string(portNumber) + "/" + databaseName;
     }
+
+    std::string MariaDBConnection::getSqlType()
+    {
+        return "mysql";
+    }
 }
