@@ -273,8 +273,3 @@ std::string SqliteConnection::getConnectionString()
 {
     return connectionString;
 }
-
-std::string SqliteConnection::getSqlType()
-{
-    return "sqlite";
-}
