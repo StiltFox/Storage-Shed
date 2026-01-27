@@ -73,7 +73,7 @@ void SqliteConnection::disconnect()
 
 Result<void*> SqliteConnection::startTransaction()
 {
-    return performUpdate("start transaction;");
+    return performUpdate("begin transaction;");
 }
 
 Result<void*> SqliteConnection::commitTransaction()

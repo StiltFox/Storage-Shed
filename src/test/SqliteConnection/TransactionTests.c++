@@ -83,7 +83,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::Transaction
         auto actual = connection.startTransaction();
 
         //then we get back a connected value of false
-        Data::Result<void*> expected = {false, "", {{"start transaction;"}}, nullptr};
+        Data::Result<void*> expected = {false, "", {{"begin transaction;"}}, nullptr};
         EXPECT_EQ(expected, actual);
     }
 
