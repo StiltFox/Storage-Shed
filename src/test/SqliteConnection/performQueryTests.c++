@@ -22,7 +22,8 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
     {
         sqlite3* connection;
         sqlite3_stmt* statement;
-        const string tableInfo = "create table if not exists test (id int primary key);";
+        //the value field is never used, but it exists to make sure that the system can handle null strings
+        const string tableInfo = "create table if not exists test (id int primary key, value varchar(255));";
         const string row = "insert into test (id) values (3)";
 
         sqlite3_open(databasePath.getPath().c_str(), &connection);
@@ -57,7 +58,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
             {
                 const char* value = (char*)sqlite3_column_text(statement, i);
                 const char* column = (char*)sqlite3_column_name(statement, i);
-                currentRow[column] = value;
+                currentRow[column] = value == nullptr ? "" : value;
             }
 
             returnData.emplace_back(currentRow);
@@ -123,7 +124,8 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
             {{"select * from test;"}},
             {
                 {
-                    {"id", "3"}
+                    {"id", "3"},
+                    {"value", ""}
                 }
             }
         };
@@ -149,10 +151,12 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
          };
          const QueryReturnData expectedData = {
              {
-                 {"id", "3"}
+                 {"id", "3"},
+                 {"value", ""}
              },
              {
-                     {"id", "1"}
+                     {"id", "1"},
+                 {"value", ""}
              }
          };
          EXPECT_EQ(expected, actual);
@@ -290,10 +294,12 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const QueryReturnData expectedData =
         {
             {
-                {"id", "3"}
+                {"id", "3"},
+                {"value", ""}
             },
             {
-                    {"id", "1"}
+                    {"id", "1"},
+                {"value", ""}
             }
         };
         EXPECT_EQ(expected, actual);
@@ -319,10 +325,46 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
             {structuredQuery},
             {
                 {
-                    {"id", "3"}
+                    {"id", "3"},
+                    {"value", ""}
                 }
             }
         };
         EXPECT_EQ(expected, actual);
+    }
+
+    TEST(performQuery, will_be_able_to_return_all_data_in_a_column_even_if_a_null_character_is_included_in_the_middle)
+    {
+        //given we have a database and we insert a value that has a null character in the middle of it
+        string hexValue = "df00453a";
+        vector<unsigned char> rawBinary  = {0xdf, 0x00, 0x45, 0x3a};
+        string stringBinary(rawBinary.begin(), rawBinary.end());
+        const TemporaryFile database = ".sfdb_3e1d79bea80c4c0d98c626cb23fa0f8a";
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+        connection.performQuery("insert into test (id, value) values (1, x'" + hexValue + "');");
+
+        //when we try to get the data back from the database
+        const auto& actual = connection.performQuery("select * from test;");
+
+        //then the value is read the full way through
+        const Result<QueryReturnData> expected =
+        {
+            true,
+            "",
+            {{"select * from test;",{}}},
+            {
+                {
+                    {"id", "3"},
+                    {"value", ""}
+                },
+                {
+                    {"id","1"},
+                    {"value",stringBinary}
+                }
+            }
+        };
+
+        EXPECT_EQ(actual, expected);
     }
 }

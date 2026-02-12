@@ -118,9 +118,9 @@ Result<TableDefinitions> SqliteConnection::getMetaData()
 
                 while (sqlite3_step(statement) == SQLITE_ROW)
                 {
-                    const char* columnText = (char*)sqlite3_column_text(statement, 2);
-                    output.data[table][(char*)sqlite3_column_text(statement,1)] =
-                        columnText == nullptr ? "" : columnText;
+                    string columnText =
+                        string((char*)sqlite3_column_text(statement,2), sqlite3_column_bytes(statement,2));
+                    output.data[table][(char*)sqlite3_column_text(statement,1)] = columnText;
                 }
                 output.performedQueries.emplace_back(query);
                 sqlite3_reset(statement);
@@ -226,9 +226,9 @@ Result<QueryReturnData> SqliteConnection::performQuery(StructuredQuery structure
                 output.data.emplace_back();
                 for (int z=0; z<columns; z++)
                 {
-                    char* columnValue = (char*)sqlite3_column_text(statement, z);
-                    output.data[output.data.size() - 1][(char*)sqlite3_column_name(statement, z)] =
-                        columnValue == nullptr ? "" : columnValue;
+                    string columnValue =
+                        string((char*)sqlite3_column_text(statement, z), sqlite3_column_bytes(statement, z));
+                    output.data[output.data.size() - 1][(char*)sqlite3_column_name(statement, z)] = columnValue;
                 }
             }
 
