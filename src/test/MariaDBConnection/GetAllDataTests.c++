@@ -52,9 +52,9 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
             0,
             "",
             {
+                {"select * from test2.information;"},
                 {"select * from test.table1;"},
-                {"select * from test.table2;"},
-                {"select * from test2.information;"}
+                {"select * from test.table2;"}
             },
             {
                 {"test.table1",

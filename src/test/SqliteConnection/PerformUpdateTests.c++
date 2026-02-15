@@ -333,11 +333,13 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
     {
         //given we have a database
         const TemporaryFile database = ".sfdb_a6da5a717944467c8c7a94b5d0b2770c";
-        const StructuredQuery structuredQuery = {"select * from test where id = ?", {"3"}};
         SqliteConnection connection = setupDatabase(database.getPath());
         connection.connect();
 
         //when we perform a query that updates multiple records
+        const auto actual = connection.performUpdate("insert into test (id) values (10),(5);");
 
+        //then we get back that we updated the proper number of rows
+        EXPECT_EQ(actual.rowsEffected, 2);
     }
 }

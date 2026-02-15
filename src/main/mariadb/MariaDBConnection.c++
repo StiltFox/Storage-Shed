@@ -198,8 +198,8 @@ namespace StiltFox::StorageShed
                         output.data[output.data.size() - 1][results->getMetaData()->getColumnName(z+1).c_str()] =
                             columnValue;
                     }
-                    if (results->rowUpdated()) output.rowsEffected++;
                 }
+                output.rowsEffected = statement->getUpdateCount();
             }
             catch (SQLException& e)
             {

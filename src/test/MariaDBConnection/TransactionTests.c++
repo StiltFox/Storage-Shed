@@ -44,5 +44,6 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::Transactions
             }
         };
         EXPECT_EQ(expected, connection.getMetaData());
+        clearDatabase();
     }
 }
