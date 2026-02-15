@@ -1,8 +1,8 @@
 if(NOT SFSkipMariaDB)
-    include_directories("/usr/local/include/mariadb") #path to include folder
+    include_directories("/usr/include/mariadb") #path to include folder
     add_library(mariadbcpp STATIC IMPORTED)
     set_property(TARGET mariadbcpp
-            PROPERTY IMPORTED_LOCATION "/usr/local/lib/mariadb/libmariadbcpp-static.a")
+            PROPERTY IMPORTED_LOCATION "/usr/lib/libmariadbcpp.so")
 
     add_library(MariaDBConnection STATIC MariaDBConnection.c++)
     target_link_libraries(MariaDBConnection
