@@ -27,6 +27,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
         const Result<MultiTableData> expected =
         {
             false,
+            0,
             "",
             {},
             {}
@@ -48,6 +49,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::GetAllData
         const Result<MultiTableData> expected =
         {
             true,
+            0,
             "",
             {
                 {"select * from test.table1;"},

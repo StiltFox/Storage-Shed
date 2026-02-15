@@ -28,6 +28,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::Transactions
         Data::Result<Data::TableDefinitions> expected =
         {
             true,
+            0,
             "",
             {
                 {"select concat(TABLE_SCHEMA, '.', TABLE_NAME) as TABLE_NAME,COLUMN_NAME,COLUMN_TYPE "

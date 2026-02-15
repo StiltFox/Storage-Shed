@@ -54,7 +54,7 @@ namespace StiltFox::StorageShed
 
     Result<void*> MariaDBConnection::startTransaction()
     {
-        Result<void*> output = {false, "", {{"start transaction"}}, nullptr};
+        Result<void*> output = {false, 0, "", {{"start transaction"}}, nullptr};
 
         if (isConnected())
         {
@@ -74,7 +74,7 @@ namespace StiltFox::StorageShed
 
     Result<void*> MariaDBConnection::rollbackTransaction()
     {
-        Result<void*> output = {false, "", {{"rollback"}}, nullptr};
+        Result<void*> output = {false, 0, "", {{"rollback"}}, nullptr};
 
         if (isConnected())
         {
@@ -98,7 +98,7 @@ namespace StiltFox::StorageShed
 
     Result<void*> MariaDBConnection::commitTransaction()
     {
-        Result<void*> output = {false, "", {{"commit"}}, nullptr};
+        Result<void*> output = {false, 0, "", {{"commit"}}, nullptr};
 
         if (isConnected())
         {
@@ -128,7 +128,7 @@ namespace StiltFox::StorageShed
     Result<void*> MariaDBConnection::performUpdate(const StructuredQuery& statement)
     {
         const auto output = performQuery(statement);
-        return {output.connected, output.errorText, output.performedQueries, nullptr};
+        return {output.connected, output.rowsEffected, output.errorText, output.performedQueries, nullptr};
     }
 
     unordered_set<string> MariaDBConnection::validate(TableDefinitions tableDefinitions, bool strict)
@@ -153,7 +153,8 @@ namespace StiltFox::StorageShed
         for (const auto& row : rawData.data)
             definitions[row.at("TABLE_NAME")][row.at("COLUMN_NAME")] = row.at("COLUMN_TYPE");
 
-        return {rawData.connected, rawData.errorText, rawData.performedQueries, definitions};
+        return {rawData.connected, rawData.rowsEffected, rawData.errorText, rawData.performedQueries,
+            definitions};
     }
 
     Result<QueryReturnData> MariaDBConnection::performQuery(string query)
@@ -163,7 +164,7 @@ namespace StiltFox::StorageShed
 
     Result<QueryReturnData> MariaDBConnection::performQuery(StructuredQuery query)
     {
-        Result<QueryReturnData> output = {false, "", {query}, {}};
+        Result<QueryReturnData> output = {false, 0, "", {query}, {}};
 
         if (isConnected())
         {
@@ -197,6 +198,7 @@ namespace StiltFox::StorageShed
                         output.data[output.data.size() - 1][results->getMetaData()->getColumnName(z+1).c_str()] =
                             columnValue;
                     }
+                    if (results->rowUpdated()) output.rowsEffected++;
                 }
             }
             catch (SQLException& e)
@@ -214,7 +216,7 @@ namespace StiltFox::StorageShed
                                   "from information_schema.TABLES "
                                   "where TABLE_SCHEMA not in "
                                   "('information_schema', 'mysql', 'performance_schema', 'sys');";
-        Result<MultiTableData> output = {false, "", {}, {}};
+        Result<MultiTableData> output = {false, 0, "", {}, {}};
 
         auto tables = performQuery(tableQuery);
         output.connected = tables.connected;

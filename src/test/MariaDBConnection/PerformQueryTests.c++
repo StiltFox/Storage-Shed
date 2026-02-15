@@ -41,6 +41,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             false,
+            0,
             "",
             {{"select * from test.table1"}},
             {}
@@ -61,6 +62,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            0,
             "",
             {{"select * from test.table1"}},
             {
@@ -85,6 +87,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         //then the query is performed and the data is inserted
         const Result<QueryReturnData> expected = {
             true,
+            1,
             "",
             {{"insert into test.table1 (id, name, dead) values (4, 'apple', 0)"}},
             {}
@@ -92,6 +95,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         const Result<QueryReturnData> expectedData =
         {
             true,
+            0,
             "",
             {{"select * from test.table1"}},
             {
@@ -120,6 +124,7 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             {}
@@ -141,10 +146,25 @@ namespace StiltFox::StorageShed::Tests::MariaDB_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             {}
         };
         EXPECT_EQ(expected, actual);
+    }
+
+    TEST_F(performQuery, will_return_a_correct_value_for_the_number_of_records_updated_if_multiple_records_are_changed)
+    {
+        //given we have a database
+        MariaDBConnection connection = connectionInformation;
+        connection.connect();
+
+        //when we perform an action that will effect multiple rows
+        const auto actual = connection.performQuery("insert into test.table1 (id, name, dead) values (1, 'a', true),"
+                                                    " (2,'b', false)");
+
+        //then we get back that two records were changed
+        EXPECT_EQ(actual.rowsEffected, 2);
     }
 }

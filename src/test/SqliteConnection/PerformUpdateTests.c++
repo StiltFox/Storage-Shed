@@ -78,6 +78,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //then we get back a connected value of false
         const Result<void*> expected = {
             false,
+            0,
             "",
             {{"create table test(id int primary key);", {}}},
             nullptr
@@ -98,6 +99,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //then we get back a connected value of true and an error
         const Result<void*> expected = {
             true,
+            0,
             "near \"bad\": syntax error",
             {{"bad sql",{}}},
             nullptr
@@ -119,6 +121,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
+            0,
             "",
             {{"select * from test;",{}}},
             nullptr
@@ -139,6 +142,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         //then the update is performed and the data is saved
         const Result<void*> expected = {
             true,
+            1,
             "",
             {{"insert into test(id) values (1);",{}}},
             nullptr
@@ -170,6 +174,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             nullptr
@@ -192,6 +197,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
+            0,
             "NOT NULL constraint failed: test.id",
             {structuredQuery},
             nullptr
@@ -214,6 +220,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             nullptr
@@ -235,6 +242,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             false,
+            0,
             "",
             {structuredQuery},
             nullptr
@@ -257,6 +265,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
+            0,
             "near \"bad\": syntax error",
             {structuredQuery},
             nullptr
@@ -279,6 +288,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             nullptr
@@ -289,7 +299,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
                 {"id", "3"}
             },
             {
-                    {"id", "1"}
+                {"id", "1"}
             }
         };
         EXPECT_EQ(expected, actual);
@@ -311,10 +321,23 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
         const Result<void*> expected =
         {
             true,
+            0,
             "",
             {structuredQuery},
             nullptr
         };
         EXPECT_EQ(expected, actual);
+    }
+
+    TEST(performUpdate, will_return_the_correct_number_of_records_updated)
+    {
+        //given we have a database
+        const TemporaryFile database = ".sfdb_a6da5a717944467c8c7a94b5d0b2770c";
+        const StructuredQuery structuredQuery = {"select * from test where id = ?", {"3"}};
+        SqliteConnection connection = setupDatabase(database.getPath());
+        connection.connect();
+
+        //when we perform a query that updates multiple records
+
     }
 }

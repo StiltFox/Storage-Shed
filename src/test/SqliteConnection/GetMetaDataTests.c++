@@ -76,6 +76,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
         const Result<TableDefinitions> expected =
             {
                 true,
+                0,
                 "",
             {
                 {"select tbl_name from sqlite_schema where type = 'table';"},
@@ -102,6 +103,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::getMetaData
         //then we get back that we are not connected
         const Result<TableDefinitions> expected = {
             false,
+            0,
             "",
             {},
             {}

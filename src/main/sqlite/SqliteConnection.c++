@@ -95,7 +95,7 @@ Result<void*> SqliteConnection::performUpdate(const string statement)
 Result<void*> SqliteConnection::performUpdate(const StructuredQuery& statement)
 {
     const Result<QueryReturnData> values = performQuery(statement);
-    return {values.connected, values.errorText, values.performedQueries, nullptr};
+    return {values.connected, values.rowsEffected, values.errorText, values.performedQueries, nullptr};
 }
 
 Result<TableDefinitions> SqliteConnection::getMetaData()
@@ -203,7 +203,7 @@ Result<QueryReturnData> SqliteConnection::performQuery(string query)
 
 Result<QueryReturnData> SqliteConnection::performQuery(StructuredQuery structuredQuery)
 {
-    Result<QueryReturnData> output = {false, "", {structuredQuery}, {}};
+    Result<QueryReturnData> output = {false, 0, "", {structuredQuery}, {}};
 
     if (isConnected())
     {
@@ -233,6 +233,7 @@ Result<QueryReturnData> SqliteConnection::performQuery(StructuredQuery structure
             }
 
             if (sqlite3_finalize(statement) != SQLITE_OK) output.errorText = sqlite3_errmsg(dbConnection);
+            output.rowsEffected = sqlite3_changes(dbConnection);
         }
         else
         {
@@ -245,7 +246,7 @@ Result<QueryReturnData> SqliteConnection::performQuery(StructuredQuery structure
 
 Result<MultiTableData> SqliteConnection::getAllData()
 {
-    Result<MultiTableData> output = {false, "", {}, {}};
+    Result<MultiTableData> output = {false, 0, "", {}, {}};
 
     if (isConnected())
     {

@@ -49,10 +49,20 @@ To skip compiling this provide the `SFSkipMariaDB=true` option when compiling.
   - you can obtain this [here](https://mariadb.com/downloads/connectors/connectors-data-access/cpp-connector)
   - You can also use the package manager `yay -S mariadb-connector-cpp-git`
   
-NOTE: MariaDB libraries may have issues compiling on newer versions of CMake. If your CMake version has a higher major
-version than 3, it may be prudent to install a seperate instance of CMake 3.x.x to compile the libraries. This can be
-done manually and the different CMake versions will not interfere with each other. See 
-[here](https://github.com/Kitware/CMake/releases) for details.
+**NOTE:** MariaDB libraries may have issues compiling on newer versions of CMake. If you have this issue you may see an
+error like this when trying to build the cpp connector:
+```
+CMake Error at build/_deps/doctest-src/CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 has been removed from CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+  Or, add -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to try configuring anyway.
+```
+To fix this you can go into the terminal that you're installing and type in `export CMAKE_POLICY_VERSION_MINIMUM=3.5` or
+you can add this line to the bottom of your .bashrc file if you want this to be a more permanent solution.
 
 ### Testing
 These libraries are only needed if you're running the unit tests. To skip the unit tests, use `SFSkipTesting=true` as an

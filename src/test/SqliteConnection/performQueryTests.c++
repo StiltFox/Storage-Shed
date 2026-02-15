@@ -79,6 +79,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         //then we get back a connected value of false
         const Result<QueryReturnData> expected = {
             false,
+            0,
             "",
             {{"create table test(id int primary key);"}},
             {}
@@ -99,6 +100,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         //then we get back a connected value of true and an error
         const Result<QueryReturnData> expected = {
             true,
+            0,
             "near \"bad\": syntax error",
             {{"bad sql"}},
             {}
@@ -120,6 +122,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            0,
             "",
             {{"select * from test;"}},
             {
@@ -145,6 +148,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         //then the query is performed and the data is saved
          const Result<QueryReturnData> expected = {
              true,
+             1,
              "",
              {{"insert into test(id) values (1);"}},
              {}
@@ -178,6 +182,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             {}
@@ -200,6 +205,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             {}
@@ -222,6 +228,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             {}
@@ -243,6 +250,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             false,
+            0,
             "",
             {structuredQuery},
             {}
@@ -265,6 +273,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            0,
             "near \"bad\": syntax error",
             {structuredQuery},
             {}
@@ -287,6 +296,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             {}
@@ -321,6 +331,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {structuredQuery},
             {
@@ -351,6 +362,7 @@ namespace StiltFox::StorageShed::Test::Sqlite_Connection::PerformQuery
         const Result<QueryReturnData> expected =
         {
             true,
+            1,
             "",
             {{"select * from test;",{}}},
             {

@@ -76,6 +76,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         const Result<MultiTableData> expected =
         {
             false,
+            0,
             "",
             {},
             {}
@@ -97,6 +98,7 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::GetAllData
         const Result<MultiTableData> expected =
         {
             true,
+            0,
             "",
             {
                 {"select tbl_name from sqlite_schema where type = 'table';"},

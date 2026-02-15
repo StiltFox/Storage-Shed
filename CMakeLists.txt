@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.0.0)
-project(Storage-Shed VERSION 2.0.1)
+project(Storage-Shed VERSION 2.1.1)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)

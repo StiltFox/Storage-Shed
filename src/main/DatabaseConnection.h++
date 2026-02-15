@@ -65,6 +65,8 @@ namespace StiltFox::StorageShed
         {
             // Shows weather or not we could actually connect to the database or not
             bool connected = false;
+            // Shows the number of records either modified or inserted
+            int rowsEffected = 0;
             // errors will be printed here. Empty error text should indicate that no error occurred.
             std::string errorText;
             // A list of queries performed by the operation. Most of the time there's only one but some functions
