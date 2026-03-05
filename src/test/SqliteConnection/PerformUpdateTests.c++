@@ -18,6 +18,18 @@ using namespace StiltFox::StorageShed::Data;
 
 namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
 {
+    void performSqlStatement(const File& databasePath, const string& statement)
+    {
+        sqlite3* connection;
+        sqlite3_stmt* stmt;
+
+        sqlite3_open(databasePath.getPath().c_str(), &connection);
+        sqlite3_prepare(connection, statement.c_str(), statement.length(), &stmt, nullptr);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+        sqlite3_close(connection);
+    }
+
     SqliteConnection setupDatabase(File databasePath)
     {
         sqlite3* connection;
@@ -27,23 +39,19 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
 
         sqlite3_open(databasePath.getPath().c_str(), &connection);
 
-        sqlite3_prepare(connection, tableInfo.c_str(), tableInfo.length(), &statement, nullptr);
-        sqlite3_step(statement);
-        sqlite3_reset(statement);
-        sqlite3_prepare(connection, row.c_str(), row.length(), &statement, nullptr);
-        sqlite3_step(statement);
-        sqlite3_finalize(statement);
+        performSqlStatement(databasePath, tableInfo);
+        performSqlStatement(databasePath, row);
 
         sqlite3_close(connection);
 
         return databasePath.getPath();
     }
 
-    QueryReturnData testProcedure(File DatabasePath)
+    QueryReturnData testProcedure(File DatabasePath, string tableName = "test")
     {
         sqlite3* connection;
         sqlite3_stmt* statement;
-        const string retrieveData = "select * from test;";
+        const string retrieveData = "select * from " + tableName + ";";
         QueryReturnData returnData;
 
         sqlite3_open(DatabasePath.getPath().c_str(), &connection);
@@ -341,5 +349,23 @@ namespace StiltFox::StorageShed::Tests::Sqlite_Connection::PerformUpdate
 
         //then we get back that we updated the proper number of rows
         EXPECT_EQ(actual.rowsEffected, 2);
+    }
+
+    TEST(performUpdate, will_not_insert_a_record_if_it_violates_forign_key_constraint)
+    {
+        //given we have a database with a table with a foreign key constraint
+        const TemporaryFile database = ".sfdb_34655aec353247da8cb4a94c23ddacbd";
+        SqliteConnection connection = setupDatabase(database.getPath());
+        performSqlStatement(database.getPath(), "create table ref_table (id int primary key, ref int, constraint "
+                                                "fk_ref_table_ref foreign key (ref) references test(id))");
+        connection.connect();
+
+        //when we try to insert a record that violates the foreign key constraint
+        const auto actual = connection.performUpdate("insert into ref_table (id, ref) values (1, 10);");
+
+        //then we get back that the insert failed and the data is not inserted
+        const auto dbValues = testProcedure(database.getPath(), "ref_table");
+        EXPECT_FALSE(actual.errorText.empty());
+        EXPECT_TRUE(dbValues.empty());
     }
 }

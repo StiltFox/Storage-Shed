@@ -59,7 +59,11 @@ bool SqliteConnection::connect()
     if(connection == nullptr && checkIfValidSqlDatabase())
     {
         sqlite3* newConnection;
-        if (sqlite3_open(connectionString.c_str(), &newConnection) == SQLITE_OK) connection = newConnection;
+        if (sqlite3_open(connectionString.c_str(), &newConnection) == SQLITE_OK)
+        {
+            connection = newConnection;
+            performUpdate("PRAGMA foreign_keys = ON;");
+        }
     }
 
     return isConnected();
